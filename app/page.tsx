@@ -1,11 +1,3 @@
-import Header from "@/components/header";
-import Navbar from "@/components/navbar";
-
 export default function Home() {
-  return (
-    <main className="min-h-screen ">
-      <Header />
-      <Navbar />
-    </main>
-  );
+  return <h1>Zawartość strony</h1>;
 }
