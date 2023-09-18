@@ -8,9 +8,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "./ui/separator";
 import { useRouter } from "next/navigation";
+import { useAddress } from "@thirdweb-dev/react";
 
 const Navbar = () => {
   const router = useRouter();
+  const address = useAddress();
+
   return (
     <div>
       <div className="flex items-center justify-around mt-2">
@@ -24,7 +27,13 @@ const Navbar = () => {
                 router.push("/dodaj");
               }}
             >
-              Stwórz NFT
+              {address ? (
+                "Stwórz NFT"
+              ) : (
+                <span className="text-red-500">
+                  Zaloguj się, aby stworzyć NFT
+                </span>
+              )}
             </Button>
           </HoverCardTrigger>
           <HoverCardContent className="p-1 text-center">
@@ -81,7 +90,13 @@ const Navbar = () => {
                 router.push("/ekwipunek");
               }}
             >
-              Ekwipunek
+              {address ? (
+                "Ekwipunek"
+              ) : (
+                <span className="text-red-500">
+                  Zaloguj się, aby zobaczyć ekwipunek
+                </span>
+              )}
             </Button>
           </HoverCardTrigger>
           <HoverCardContent className="p-1 text-center">

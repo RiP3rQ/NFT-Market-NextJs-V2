@@ -16,6 +16,11 @@ const DodajNFT = () => {
     "nft-collection"
   );
 
+  if (!address) {
+    router.push("/oferty");
+    toast.error("Musisz być zalogowany, aby zobaczyć tę stronę");
+  }
+
   const mintNft = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
