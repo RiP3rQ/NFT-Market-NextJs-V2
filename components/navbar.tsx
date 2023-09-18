@@ -21,10 +21,29 @@ const Navbar = () => {
               variant="link"
               className="text-xl font-bold hover:underline hover:decoration-pink-600/50"
               onClick={() => {
+                router.push("/dodaj");
+              }}
+            >
+              Stwórz NFT
+            </Button>
+          </HoverCardTrigger>
+          <HoverCardContent className="p-1 text-center">
+            <p className="text-gray-400 text-sm">
+              Stwórz własne unikalne NFT i sprzedaj je na naszym rynku.
+            </p>
+          </HoverCardContent>
+        </HoverCard>
+        {/* Nowa zakładka */}
+        <HoverCard>
+          <HoverCardTrigger>
+            <Button
+              variant="link"
+              className="text-xl font-bold hover:underline hover:decoration-pink-600/50"
+              onClick={() => {
                 router.push("/oferty");
               }}
             >
-              Dostępne oferty na rynku
+              Rynek NFT
             </Button>
           </HoverCardTrigger>
           <HoverCardContent className="p-1 text-center">
@@ -43,7 +62,7 @@ const Navbar = () => {
                 router.push("/kolekcje");
               }}
             >
-              Przeglądaj kolekcje
+              Kolekcje
             </Button>
           </HoverCardTrigger>
           <HoverCardContent className="p-1 text-center">
@@ -62,7 +81,7 @@ const Navbar = () => {
                 router.push("/ekwipunek");
               }}
             >
-              Posiadane NFT
+              Ekwipunek
             </Button>
           </HoverCardTrigger>
           <HoverCardContent className="p-1 text-center">

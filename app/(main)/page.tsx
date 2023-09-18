@@ -1,15 +1,11 @@
-import React from "react";
-import Header from "@/components/header";
-import Navbar from "@/components/navbar";
+"use client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-const MainPage = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <div className="min-h-screen">
-      <Header />
-      <Navbar />
-      {children}
-    </div>
-  );
+const MainPage = () => {
+  const router = useRouter();
+
+  return router.push("/oferty");
 };
 
 export default MainPage;

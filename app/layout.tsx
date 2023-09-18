@@ -2,6 +2,7 @@ import { WEB3Provider } from "@/components/providers/thirdweb-provider";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
+import ToasterProvider from "@/components/providers/toaster-provider";
 
 const font = Open_Sans({ subsets: ["latin"] });
 
@@ -18,6 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={font.className}>
+        <ToasterProvider />
         <WEB3Provider>{children}</WEB3Provider>
       </body>
     </html>
