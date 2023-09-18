@@ -16,6 +16,11 @@ const Navbar = () => {
 
   return (
     <div>
+      {!address && (
+        <div className="w-full text-xs text-red-500 text-center underline decoration-pink-600/95">
+          Zaloguj się, aby w pełni korzystać z serwisu*
+        </div>
+      )}
       <div className="flex items-center justify-around mt-2">
         {/* Nowa zakładka */}
         <HoverCard>
