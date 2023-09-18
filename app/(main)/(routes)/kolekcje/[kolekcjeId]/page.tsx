@@ -10,36 +10,44 @@ import {
 import { Mumbai } from "@thirdweb-dev/chains";
 import { BigNumber } from "ethers";
 import { InfinitySpin } from "react-loader-spinner";
-import { useToast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import axios from "axios";
+import { Collection } from "@prisma/client";
+import qs from "query-string";
 
-type Props = {
-  collection: {
-    _id: string;
-    title: string;
-    description: string;
-    nftCollectionName: string;
-    address: string;
-    slug: {
-      current: string;
+const NFTDropInvidualPage = () => {
+  const [collectionLoading, setCollectionLoading] = useState<boolean>(true);
+  const [collection, setCollection] = useState<Collection>();
+  const collectionId = usePathname().split("/")[2];
+  const searchParams = useSearchParams();
+  const collectionAddress = searchParams?.get("collectionAddress");
+
+  // fetch collection data
+  useEffect(() => {
+    setCollectionLoading(true);
+
+    const getSingleCollection = async () => {
+      const collectionData = await axios.get(
+        "/api/kolekcje/pojedynczaKolekcja",
+        {
+          params: {
+            id: collectionId,
+          },
+        }
+      );
+      setCollection(collectionData.data);
+      setCollectionLoading(false);
     };
-    creator: string;
-    mainImage: string;
-    previewImage: string;
-  };
-};
 
-const NFTDropInvidualPage = ({ collection }: Props) => {
-  const { toast } = useToast();
+    getSingleCollection();
+  }, []);
 
   const [claimedSupply, setClaimedSupply] = useState<number>(0);
   const [totalSupply, setTotalSupply] = useState<BigNumber>();
-  const { contract: nftDrop } = useContract(
-    process.env.NEXT_PUBLIC_NFT_DROP_ADDRESS,
-    "nft-drop"
-  );
   const [loading, setLoading] = useState<boolean>(true);
   const [priceInMatic, setPriceInMatic] = useState<string>("");
+  const { contract: nftDrop } = useContract(collectionAddress, "nft-drop");
   const router = useRouter();
 
   // Switch Networks if wrong
@@ -57,6 +65,7 @@ const NFTDropInvidualPage = ({ collection }: Props) => {
 
     const fetchPrice = async () => {
       const claimCondition = await nftDrop.claimConditions.getAll();
+
       setPriceInMatic(claimCondition?.[0].currencyMetadata.displayValue);
     };
 
@@ -87,22 +96,29 @@ const NFTDropInvidualPage = ({ collection }: Props) => {
     if (!nftDrop || !address) return;
 
     // toaster notification
-    toast({
-      title: "Minting NFT",
-      description: "Please wait while we mint your NFT",
-      variant: "default",
-      duration: 8000,
+    const notification = toast.loading("Minting...", {
+      style: {
+        background: "white",
+        color: "green",
+        fontWeight: "bolder",
+        fontSize: "17px",
+        padding: "20px",
+      },
     });
 
     if (networkMismatch) {
       switchChain(Mumbai.chainId);
-      toast({
-        title: "Network mismatch",
-        description: "Switching to Mumbai Network. Try again Now!",
-        variant: "default",
+      toast("Network mismatch. Try again Now", {
         duration: 8000,
-        className: "bg-orange-500 text-white font-bold text-lg px-6 py-4",
+        style: {
+          background: "orange",
+          color: "white",
+          fontWeight: "bold",
+          fontSize: "17px",
+          padding: "20px",
+        },
       });
+      toast.dismiss(notification);
       return;
     }
 
@@ -112,63 +128,80 @@ const NFTDropInvidualPage = ({ collection }: Props) => {
 
     nftDrop
       ?.claimTo(address, quantity)
-      .then(async (tx) => {
-        const receipt = tx[0].receipt; // the transaction receipt
-        const claimedTokenId = tx[0].id; // the id of the NFT claimed
+      .then(async (tx: { data: () => any }[]) => {
         const claimedNFT = await tx[0].data(); // (optional) get the claimed NFT metadata from the
 
-        toast({
-          title: "Transaction Successful",
-          description: "Your NFT was minted successfully",
-          duration: 3000,
-          className: "bg-green-500 text-white font-bold text-lg px-6 py-4",
+        toast("HOORAY... Your minting was successful", {
+          duration: 8000,
+          style: {
+            background: "green",
+            color: "white",
+            fontWeight: "bold",
+            fontSize: "17px",
+            padding: "20px",
+          },
         });
 
-        // setTimeout(() => {
-        //   router.push({
-        //     pathname: `/minted/${claimedNFT.metadata.id}`,
-        //     query: {
-        //       name: claimedNFT.metadata.name,
-        //       image: claimedNFT.metadata.image,
-        //       description: claimedNFT.metadata.description,
-        //       owner: claimedNFT.owner,
-        //       supply: claimedNFT.supply,
-        //     },
-        //   });
-        // }, 3000);
+        setTimeout(() => {
+          const url = qs.stringifyUrl(
+            {
+              url: `/minted/${claimedNFT.metadata.id}`,
+              query: {
+                name: claimedNFT.metadata.name,
+                image: claimedNFT.metadata.image,
+                description: claimedNFT.metadata.description,
+                owner: claimedNFT.owner,
+                supply: claimedNFT.supply,
+              },
+            },
+            { skipNull: true }
+          );
+
+          router.push(url);
+        }, 3000);
       })
-      .catch((err) =>
-        toast({
-          title: "Transaction Failed",
-          description: err.message,
-          variant: "default",
-          duration: 3000,
-          className: "bg-red-500 text-white font-bold text-lg px-6 py-4",
+      .catch(() =>
+        toast("WHOOOPS something didn't go as planed", {
+          style: {
+            background: "red",
+            color: "white",
+            fontWeight: "bolder",
+            fontSize: "17px",
+            padding: "20px",
+          },
         })
       )
-
       .finally(() => {
         setLoading(false);
+        toast.dismiss(notification);
       });
   };
 
+  if (collectionLoading)
+    return (
+      <div className="bg-slate-100 h-full flex flex-col items-center justify-center">
+        <InfinitySpin width="200" color="#4fa94d" />
+        <h1 className="text-3xl">Loading...</h1>
+      </div>
+    );
+
   return (
-    <div className="flex h-screen flex-col lg:grid lg:grid-cols-10">
+    <div className="flex h-full flex-col lg:grid lg:grid-cols-10">
       {/* Left Side */}
       <div className="bg-gradient-to-br from-cyan-800 to-rose-500 lg:col-span-4">
-        <div className="flex flex-col items-center justify-center py-2 lg:min-h-screen">
+        <div className="flex flex-col items-center justify-center py-2 lg:h-full">
           <div className="bg-gradient-to-br from-yellow-400 to-purple-600 p-2 rounded-xl">
             <img
               className="w-44 rounded-xl object-cover lg:h-96 lg:w-72"
-              src="https://links.papareact.com/8sg"
-              alt="apes collection"
+              src={collection?.previewImage}
+              alt={collection?.title}
             />
           </div>
           <div className="text-center p-5 space-y-6">
             <h1 className="text-4xl font-bold text-white">
-              {collection.nftCollectionName}
+              {collection?.nftCollectionName}
             </h1>
-            <h2 className="text-xl text-gray-300">{collection.description}</h2>
+            <h2 className="text-xl text-gray-300">{collection?.description}</h2>
           </div>
         </div>
       </div>
@@ -181,12 +214,12 @@ const NFTDropInvidualPage = ({ collection }: Props) => {
         >
           <img
             className="w-80 object-cover pb-10 lg:h-40"
-            src="https://links.papareact.com/8sg"
-            alt="apes collection"
+            src={collection?.mainImage}
+            alt={collection?.title}
           />
 
           <h1 className="text-3xl font-bold lg:text-5xl lg:font-extrabold">
-            {collection.title}
+            {collection?.title}
           </h1>
 
           {loading ? (
