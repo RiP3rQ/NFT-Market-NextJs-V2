@@ -22,8 +22,13 @@ const EkwipunekPage = () => {
     process.env.NEXT_PUBLIC_NFT_DROP_ADDRESS,
     "nft-drop"
   );
+  const { contract: dropContractPunks } = useContract(
+    process.env.NEXT_PUBLIC_NFT_DROP_PUNKS_ADDRESS,
+    "nft-drop"
+  );
   const ownedNfts = useOwnedNFTs(collectionContract, address);
   const ownedNftsFromDrop = useOwnedNFTs(dropContract, address);
+  const ownedNftsFromDropPunks = useOwnedNFTs(dropContractPunks, address);
 
   return (
     <div className="flex flex-col h-full w-full">
@@ -45,6 +50,15 @@ const EkwipunekPage = () => {
             />
           ))}
           {ownedNftsFromDrop?.data?.map((ntf) => (
+            <NftCard
+              key={ntf.metadata.id}
+              id={ntf.metadata.id}
+              title={ntf.metadata.name?.toString()}
+              description={ntf.metadata.description?.toString()}
+              image={ntf.metadata.image?.toString()}
+            />
+          ))}
+          {ownedNftsFromDropPunks?.data?.map((ntf) => (
             <NftCard
               key={ntf.metadata.id}
               id={ntf.metadata.id}

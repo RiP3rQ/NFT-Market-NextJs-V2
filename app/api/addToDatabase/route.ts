@@ -6,15 +6,15 @@ export async function POST(req: Request) {
   try {
     const collection = await db.collection.create({
       data: {
-        title: "RiP3rQ's Crypto Apes Collection",
-        description: "Newest NFT Collection from RiP3rQ",
-        nftCollectionName: "Crypto Apes",
-        address: "0x0CeDb6A3f01cd76DbEACe475Def1Ade6aa06ad7d",
+        title: "RiP3rQ Cryptopunks Collection",
+        description: "Awesome futuristic Cryptopunks Collection",
+        nftCollectionName: "Cryptopunks",
+        address: "0xC3aA0F9330D57B4cd47ab08a470e64F8be5496A2",
         creatorId: "clmp0cuxh0000vb80ba9tqdlo",
         mainImage:
-          "https://15065ae3c21e0bff07eaf80b713a6ef0.ipfscdn.io/ipfs/bafybeiaciddzq4g3ino43nyr3jobwk3m5ycby3f42k2aqo2c2ej5u5elm4/main.jfif",
+          "https://15065ae3c21e0bff07eaf80b713a6ef0.ipfscdn.io/ipfs/bafybeigwkjjadxhrkguu3fgpekky2mtrl7awceuwqewmmwj4rdzvc7gony/main.jfif",
         previewImage:
-          "https://15065ae3c21e0bff07eaf80b713a6ef0.ipfscdn.io/ipfs/bafybeibg2psahmef3nqrpnoa6zli4svj3xyfcpabb2gmkwosovp3akfvoa/1.jfif",
+          "https://15065ae3c21e0bff07eaf80b713a6ef0.ipfscdn.io/ipfs/bafybeie5vltxb2weaxt53atj3ddbfagcp3t4dnus3rmm5kkakqsnq67ela/0.png",
       },
     });
 

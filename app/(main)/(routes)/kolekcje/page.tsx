@@ -34,12 +34,12 @@ const KolekcjePage = () => {
 
   return (
     <main className=" p-10 h-full flex flex-col">
-      <div className="grid space-x-3 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2">
         {collections.map((collection) => (
           <div
             key={collection.id}
             className="flex flex-col items-center cursor-pointer 
-            transition-all duration-200 hover:scale-105"
+            transition-all duration-200 hover:scale-105 my-2"
             onClick={() => {
               const url = qs.stringifyUrl(
                 {
