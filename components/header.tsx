@@ -3,8 +3,9 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import ConnectWalletButton from "./connect-wallet-button";
+import ConnectWalletButton from "@/components/connect-wallet-button";
 import { useRouter } from "next/navigation";
+import { ModeToggle } from "@/components/theme-button";
 
 const Header = () => {
   const router = useRouter();
@@ -22,7 +23,10 @@ const Header = () => {
           </h1>
           <h2 className="font-extralight text-sm text-gray-400">© RIP3RQ</h2>
         </div>
-        <ConnectWalletButton />
+        <div className="flex items-center justify-center space-x-3">
+          <ModeToggle />
+          <ConnectWalletButton />
+        </div>
       </div>
       <Separator />
     </div>

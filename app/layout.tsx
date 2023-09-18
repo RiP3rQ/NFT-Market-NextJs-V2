@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import ToasterProvider from "@/components/providers/toaster-provider";
 import { ModalProvider } from "@/components/providers/modal-provider";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 const font = Open_Sans({ subsets: ["latin"] });
 
@@ -23,7 +24,14 @@ export default function RootLayout({
         <ToasterProvider />
         <WEB3Provider>
           <ModalProvider />
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
         </WEB3Provider>
       </body>
     </html>

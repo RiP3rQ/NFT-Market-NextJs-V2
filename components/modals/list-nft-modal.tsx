@@ -182,7 +182,7 @@ const ListNftModal = () => {
         form.reset();
       }}
     >
-      <DialogContent className="bg-white text-black p-0 overflow-hidden">
+      <DialogContent className="bg-white text-black dark:bg-gray-800 dark:text-white p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
             Wystaw NFT na sprzedaż
@@ -251,10 +251,10 @@ const ListNftModal = () => {
                 )}
               />
             </div>
-            <DialogFooter className="bg-gray-100 px-6 py-4">
+            <DialogFooter className=" px-6 py-4">
               <Button
                 variant="link"
-                className="text-xl font-bold hover:underline hover:decoration-pink-600/50"
+                className="text-xl font-bold hover:underline hover:decoration-pink-600/50 border-2 border-pink-600/50"
                 disabled={isLoading}
               >
                 Wystaw

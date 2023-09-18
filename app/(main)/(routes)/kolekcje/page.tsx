@@ -26,14 +26,14 @@ const KolekcjePage = () => {
 
   if (loading)
     return (
-      <div className="bg-slate-100 h-full flex flex-col items-center justify-center">
+      <div className=" h-full flex flex-col items-center justify-center">
         <InfinitySpin width="200" color="#4fa94d" />
         <h1 className="text-3xl">Loading...</h1>
       </div>
     );
 
   return (
-    <main className="bg-slate-100 p-10 h-full flex flex-col">
+    <main className=" p-10 h-full flex flex-col">
       <div className="grid space-x-3 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
         {collections.map((collection) => (
           <div
@@ -60,7 +60,7 @@ const KolekcjePage = () => {
               alt={collection.title}
             />
 
-            <div className="p-5">
+            <div className="p-5 text-center">
               <h2 className="text-3xl">{collection.title}</h2>
               <p className="mt-2 text-sm text-gray-400">
                 {collection.description}
