@@ -7,7 +7,8 @@ interface ModalData {
   title?: string;
   description?: string;
   image?: string;
-  id: BigNumberish;
+  id: string;
+  assetContractAddress: string;
 }
 
 interface ModalStore {
@@ -19,12 +20,14 @@ interface ModalStore {
 
 export const useModal = create<ModalStore>((set) => ({
   data: {
-    id: 0,
+    id: "0",
+    assetContractAddress: "",
   },
   isOpen: false,
   onOpen: (
     data = {
-      id: 0,
+      id: "0",
+      assetContractAddress: "",
     }
   ) => set({ isOpen: true, data }),
   onClose: () => set({ isOpen: false }),

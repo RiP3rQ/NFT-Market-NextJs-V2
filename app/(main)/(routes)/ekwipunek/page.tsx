@@ -5,15 +5,21 @@ import { Separator } from "@/components/ui/separator";
 import NftCard from "@/components/ekwipunek/nft-card";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { useEffect } from "react";
 
 const EkwipunekPage = () => {
   const router = useRouter();
   const address = useAddress();
 
-  if (!address) {
-    router.push("/oferty");
-    toast.error("Musisz być zalogowany, aby zobaczyć tę stronę");
-  }
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     if (!address) {
+  //       router.push("/");
+  //       toast.error("Musisz być zalogowany, aby zobaczyć tę stronę");
+  //     }
+  //   }, 1000);
+  // }, [address]);
+
   const { contract: collectionContract } = useContract(
     process.env.NEXT_PUBLIC_COLLECTION_CONTRACT,
     "nft-collection"
@@ -47,6 +53,9 @@ const EkwipunekPage = () => {
               title={ntf.metadata.name?.toString()}
               description={ntf.metadata.description?.toString()}
               image={ntf.metadata.image?.toString()}
+              assetContractAddress={
+                process.env.NEXT_PUBLIC_COLLECTION_CONTRACT!
+              }
             />
           ))}
           {ownedNftsFromDrop?.data?.map((ntf) => (
@@ -56,6 +65,7 @@ const EkwipunekPage = () => {
               title={ntf.metadata.name?.toString()}
               description={ntf.metadata.description?.toString()}
               image={ntf.metadata.image?.toString()}
+              assetContractAddress={process.env.NEXT_PUBLIC_NFT_DROP_ADDRESS!}
             />
           ))}
           {ownedNftsFromDropPunks?.data?.map((ntf) => (
@@ -65,6 +75,9 @@ const EkwipunekPage = () => {
               title={ntf.metadata.name?.toString()}
               description={ntf.metadata.description?.toString()}
               image={ntf.metadata.image?.toString()}
+              assetContractAddress={
+                process.env.NEXT_PUBLIC_NFT_DROP_PUNKS_ADDRESS!
+              }
             />
           ))}
         </div>

@@ -41,7 +41,7 @@ import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
 
 const formSchema = z.object({
   listingType: z.string().optional(),
-  price: z.number().min(0.000001).default(0.001),
+  price: z.coerce.number().min(0.0001, "Cena musi być większa od 0.0001"),
 });
 
 const ListNftModal = () => {
@@ -54,19 +54,19 @@ const ListNftModal = () => {
 
   // Marketplace contract
   const { contract } = useContract(
-    process.env.NEXT_PUBLIC_MARKETPLACE_CONTRACT,
-    "marketplace"
+    process.env.NEXT_PUBLIC_MARKETPLACE_CONTRACT!,
+    "marketplace-v3"
   );
 
   // Marketplace contract actions
   const {
-    mutate: createDirectListing,
+    mutateAsync: createDirectListing,
     isLoading: isLoadingDirect,
     error,
   } = useCreateDirectListing(contract);
 
   const {
-    mutate: createAuctionListing,
+    mutateAsync: createAuctionListing,
     isLoading: isLoadingAuction,
     error: errorAuction,
   } = useCreateAuctionListing(contract);
@@ -90,7 +90,7 @@ const ListNftModal = () => {
 
       if (networkMismatch) {
         switchChain(Mumbai.chainId);
-        toast("Network mismatch. Try again Now", {
+        toast("Błąd sieci. Zmień sieć i spróbuj ponownie!", {
           duration: 8000,
           style: {
             background: "orange",
@@ -107,22 +107,25 @@ const ListNftModal = () => {
       if (listingType === "directListing") {
         createDirectListing(
           {
-            assetContractAddress: process.env.NEXT_PUBLIC_COLLECTION_CONTRACT!,
-            tokenId: data?.id,
+            assetContractAddress: data.assetContractAddress!,
+            tokenId: data.id,
             currencyContractAddress: NATIVE_TOKEN_ADDRESS,
-            listingDurationInSeconds: 60 * 60 * 24 * 7, // 1 week
+            pricePerToken: price,
             quantity: 1,
-            buyoutPricePerToken: price,
             startTimestamp: new Date(),
+            endTimestamp: new Date(
+              new Date().getTime() + 7 * 24 * 60 * 60 * 1000
+            ),
           },
           {
             onSuccess() {
-              toast.success("Listing made successfully!", {
+              toast.success("Wystawiono NFT na sprzedaż!", {
                 id: notification,
               });
+              router.push("/");
             },
             onError() {
-              toast.error("Listing couldn't be made! ERROR!", {
+              toast.error("ERROR! Coś poszło nie tak", {
                 id: notification,
               });
             },
@@ -133,34 +136,37 @@ const ListNftModal = () => {
       if (listingType === "auctionListing") {
         createAuctionListing(
           {
-            assetContractAddress: process.env.NEXT_PUBLIC_COLLECTION_CONTRACT!,
-            tokenId: data?.id,
+            assetContractAddress: data.assetContractAddress!,
+            tokenId: data.id,
             currencyContractAddress: NATIVE_TOKEN_ADDRESS,
-            listingDurationInSeconds: 60 * 60 * 24 * 7, // 1 week
             quantity: 1,
-            buyoutPricePerToken: price,
+            minimumBidAmount: price * 0.5,
+            buyoutBidAmount: price,
+            bidBufferBps: 500, // 5%
             startTimestamp: new Date(),
-            reservePricePerToken: 0,
+            endTimestamp: new Date(
+              new Date().getTime() + 7 * 24 * 60 * 60 * 1000
+            ),
+            timeBufferInSeconds: 60 * 60 * 24, // 1 day
           },
           {
             onSuccess() {
-              toast.success("Listing made successfully!", {
+              toast.success("Wystawiono NFT na licytację!", {
                 id: notification,
               });
               router.push("/");
             },
-            onError() {
-              toast.error("Listing couldn't be made! ERROR!", {
+            onError(error) {
+              toast.error("ERROR! Coś poszło nie tak", {
                 id: notification,
               });
+              console.log(error);
             },
           }
         );
       }
 
       form.reset();
-      //   router.refresh();
-      //   window.location.reload();
     } catch (error) {
       console.log(error);
     }
@@ -241,6 +247,7 @@ const ListNftModal = () => {
                     <FormControl>
                       <Input
                         disabled={isLoading}
+                        type="number"
                         className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
                         placeholder="np. 0.001"
                         {...field}

@@ -17,7 +17,7 @@ const DodajNFT = () => {
   );
 
   if (!address) {
-    router.push("/oferty");
+    router.push("/");
     toast.error("Musisz być zalogowany, aby zobaczyć tę stronę");
   }
 

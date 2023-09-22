@@ -54,7 +54,7 @@ const Navbar = () => {
               variant="link"
               className="text-xl font-bold hover:underline hover:decoration-pink-600/50"
               onClick={() => {
-                router.push("/oferty");
+                router.push("/");
               }}
             >
               Rynek NFT
