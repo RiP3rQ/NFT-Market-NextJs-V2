@@ -41,7 +41,7 @@ import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
 
 const formSchema = z.object({
   listingType: z.string().optional(),
-  price: z.coerce.number().min(0.0001, "Cena musi być większa od 0.0001"),
+  price: z.coerce.number().min(0.00001, "Cena musi być większa od 0.0001"),
 });
 
 const ListNftModal = () => {
