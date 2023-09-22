@@ -37,9 +37,8 @@ const MarketplaceCard = ({
   };
 
   return (
-    <div>
+    <div key={id}>
       <div
-        key={id}
         className="flex flex-col card hover:scale-105 translate-all duration-150 ease-out cursor-pointer"
         onClick={onClick}
       >

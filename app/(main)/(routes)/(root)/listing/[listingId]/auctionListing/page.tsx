@@ -18,6 +18,7 @@ import React, { useEffect, useState } from "react";
 import { Mumbai } from "@thirdweb-dev/chains";
 import toast from "react-hot-toast";
 import Countdown from "react-countdown";
+import { InfinitySpin } from "react-loader-spinner";
 
 const AuctionListing = ({ params }: { params: { listingId: string } }) => {
   const address = useAddress();
@@ -73,17 +74,17 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
     if (!listingId || !contract || !listing) return;
 
     // Toast notification to say buying NFT
-    const notification = toast.loading("Buying process initialized...");
+    const notification = toast.loading("Rozpocząto proces kupna...");
 
     const txResult = await contract.englishAuctions
       .buyoutAuction(listingId)
       .then((tx) => {
-        toast.success("NFT bought successfully", { id: notification });
+        toast.success("Zakupiono pomyślnie!", { id: notification });
         router.push("/ekwipunek");
         return tx;
       })
       .catch((error) => {
-        toast.error("NFT couldn't be bought", { id: notification });
+        toast.error("UPS! Coś poszło nie tak.", { id: notification });
         console.log(error);
         return error;
       })
@@ -128,16 +129,19 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
   // Loader
   if (isLoading)
     return (
-      <div>
-        <div className="text-center animate-pulse text-blue-500">
-          <p>Loading Item...</p>
-        </div>
+      <div className=" h-full flex flex-col items-center justify-center">
+        <InfinitySpin width="200" color="#4fa94d" />
+        <h1 className="text-3xl mr-4">Ładuję</h1>
       </div>
     );
 
   // Error with listing
   if (!listing) {
-    return <div>Listing not found!</div>;
+    return (
+      <div className="flex items-center justify-center">
+        Nie znaleziono NFT!
+      </div>
+    );
   }
 
   // Actual page

@@ -17,11 +17,12 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Mumbai } from "@thirdweb-dev/chains";
 import toast from "react-hot-toast";
+import { InfinitySpin } from "react-loader-spinner";
 
 const DirectListing = ({ params }: { params: { listingId: string } }) => {
   const address = useAddress();
   const router = useRouter();
-  const [bidAmount, setBidAmount] = useState("");
+  const [bidAmount, setBidAmount] = useState(0.0001);
   const [offers, setOffers] = useState<any[]>([]);
   const { listingId } = params;
 
@@ -36,9 +37,15 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
     if (!contract) return;
 
     const getOffers = async () => {
-      const offers = await contract?.offers?.getAllValid().then((offers) => {
-        setOffers(offers);
-      }); // offers for nft
+      const offers = await contract?.offers
+        ?.getAllValid()
+        .then((offers) => {
+          setOffers(offers);
+        })
+        .catch((error) => {
+          console.log(error);
+          return;
+        }); // offers for nft
 
       console.log(offers);
     };
@@ -63,18 +70,22 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
     if (!listingId || !contract || !listing) return;
 
     // Toast notification to say buying NFT
-    const notification = toast.loading("Buying process initialized...");
+    const notification = toast.loading("Rozpocząto proces kupna...");
 
     const txResult = await contract.directListings
       .buyFromListing(listingId, 1, address)
       .then((tx) => {
-        toast.success("NFT bought successfully", { id: notification });
+        toast.success("Zakupiono pomyślnie!", { id: notification });
+        router.push("/ekwipunek");
         return tx;
       })
       .catch((error) => {
-        toast.error("NFT couldn't be bought", { id: notification });
+        toast.error("UPS! Coś poszło nie tak.", { id: notification });
         console.log(error);
         return error;
+      })
+      .finally(() => {
+        setBidAmount(0);
       });
 
     console.log(txResult);
@@ -83,16 +94,18 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
   // Accept an offer function
   const acceptDirectOffer = async (offerId: string) => {
     // Toast notification to say accepting offer
-    const notification = toast.loading("Accepting offer...");
+    const notification = toast.loading("Akceptowanie oferty..");
 
     const txResult = await contract?.offers
       .acceptOffer(offerId)
       .then((tx) => {
-        toast.success("Offer accepted", { id: notification });
+        toast.success("Oferta zaakceptowana!", { id: notification });
         return tx;
       })
       .catch((error) => {
-        toast.error("Offer couldn't be accepted", { id: notification });
+        toast.error("Oferta nie mogła zostać zaakceptowana.", {
+          id: notification,
+        });
         console.log(error);
         return error;
       });
@@ -105,7 +118,7 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
   // Make an offer function
   const makeOffer = async () => {
     // Toast notification to making offer
-    const notification = toast.loading("Making offer...");
+    const notification = toast.loading("Tworzę ofertę...");
 
     if (!contract || !listing || !bidAmount) return;
 
@@ -118,14 +131,14 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
         assetContractAddress: listing.assetContractAddress, // Required - the contract address of the NFT to offer on
         tokenId: listing.id, // Required - the token ID to offer on
         totalPrice: bidAmount, // Required - the price to offer in the currency specified
-        currencyContractAddress: NATIVE_TOKEN_ADDRESS, // Optional - defaults to the native wrapped currency
+        currencyContractAddress: NATIVE_TOKEN_ADDRESS, // Required - the contract address of the currency to offer in
       })
       .then((tx) => {
-        toast.success("Offer send", { id: notification });
+        toast.success("Oferta wysłana!", { id: notification });
         return tx;
       })
       .catch((error) => {
-        toast.error("Offer couldn't be send", { id: notification });
+        toast.error("Oferta nie mogła zostać wysłana.", { id: notification });
         console.log(error);
         return error;
       });
@@ -133,19 +146,24 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
     console.log(txResult);
   };
 
+  console.log(listing);
+
   // Loader
   if (isLoading)
     return (
-      <div>
-        <div className="text-center animate-pulse text-blue-500">
-          <p>Loading Item...</p>
-        </div>
+      <div className=" h-full flex flex-col items-center justify-center">
+        <InfinitySpin width="200" color="#4fa94d" />
+        <h1 className="text-3xl mr-4">Ładuję</h1>
       </div>
     );
 
   // Error with listing
   if (!listing) {
-    return <div>Listing not found!</div>;
+    return (
+      <div className="flex items-center justify-center">
+        Nie znaleziono NFT!
+      </div>
+    );
   }
 
   // Actual page
@@ -236,13 +254,15 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
           <div className="grid grid-cols-2 space-y-2 items-center justify-end">
             <hr className="col-span-2" />
 
-            <p className="col-span-2 font-bold">Zaoferuj niższa cenę [MATIC]</p>
+            <p className="col-span-2 font-bold">
+              Zaoferuj niższa cenę [MATIC]:
+            </p>
 
             <input
-              type="text"
+              type="number"
               placeholder="Wpisz proponowaną kwotę"
               className="border p-2 rounded-lg mr-5"
-              onChange={(e) => setBidAmount(e.target.value)}
+              onChange={(e) => setBidAmount(e.target.valueAsNumber)}
               value={bidAmount}
             />
             <button

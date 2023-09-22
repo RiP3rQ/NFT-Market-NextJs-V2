@@ -28,7 +28,7 @@ const KolekcjePage = () => {
     return (
       <div className=" h-full flex flex-col items-center justify-center">
         <InfinitySpin width="200" color="#4fa94d" />
-        <h1 className="text-3xl">Loading...</h1>
+        <h1 className="text-3xl mr-4">Ładuję</h1>
       </div>
     );
 

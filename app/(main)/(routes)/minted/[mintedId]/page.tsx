@@ -39,17 +39,17 @@ const SuccessfulMintPage = () => {
         space-y-6 text-center lg:space-y-0 justify-center"
         >
           <h1 className="text-4xl font-bold lg:text-5xl lg:font-extrabold text-green-500">
-            ! CONGRATULATION !
+            ! Gratulacje !
           </h1>
           <p className="text-base font-bold lg:text-xl lg:font-extrabold text-center text-rose-400">
             {owner?.slice(0, 5) + "..." + owner?.slice(-5)}
           </p>
 
           <p className="text-2xl font-bold lg:text-4xl lg:font-extrabold text-gray-400">
-            You successful minted x{supply} NFT
+            Pomyślnie udało ci się zdobyć x{supply} NFT
           </p>
           <span className="text-lg font-bold lg:text-xl lg:font-extrabold text-gray-300">
-            From collection: {description}
+            Kolekcja: {description}
           </span>
         </div>
 
@@ -62,9 +62,7 @@ const SuccessfulMintPage = () => {
             onClick={() => router.back()}
             className="bg-gradient-to-br from-cyan-800 to-rose-500 p-5 rounded-3xl"
           >
-            <p className="text-white font-bold text-lg">
-              Let's mint another one
-            </p>
+            <p className="text-white font-bold text-lg">Odbierz następne NFT</p>
           </button>
         </div>
       </div>

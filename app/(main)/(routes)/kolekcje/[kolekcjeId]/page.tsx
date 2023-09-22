@@ -96,7 +96,7 @@ const NFTDropInvidualPage = () => {
     if (!nftDrop || !address) return;
 
     // toaster notification
-    const notification = toast.loading("Minting...", {
+    const notification = toast.loading("Odbieram...", {
       style: {
         background: "white",
         color: "green",
@@ -108,7 +108,7 @@ const NFTDropInvidualPage = () => {
 
     if (networkMismatch) {
       switchChain(Mumbai.chainId);
-      toast("Network mismatch. Try again Now", {
+      toast("Błąd sieci! Spróbuj ponownie.", {
         duration: 8000,
         style: {
           background: "orange",
@@ -131,7 +131,7 @@ const NFTDropInvidualPage = () => {
       .then(async (tx: { data: () => any }[]) => {
         const claimedNFT = await tx[0].data(); // (optional) get the claimed NFT metadata from the
 
-        toast("HOORAY... Your minting was successful", {
+        toast("NFT odebrane pomyślnie! ", {
           duration: 8000,
           style: {
             background: "green",
@@ -161,7 +161,7 @@ const NFTDropInvidualPage = () => {
         }, 3000);
       })
       .catch(() =>
-        toast("WHOOOPS something didn't go as planed", {
+        toast("Ups! Coś poszło nie tak.", {
           style: {
             background: "red",
             color: "white",
@@ -179,9 +179,9 @@ const NFTDropInvidualPage = () => {
 
   if (collectionLoading)
     return (
-      <div className="bg-slate-100 h-full flex flex-col items-center justify-center">
+      <div className=" h-full flex flex-col items-center justify-center">
         <InfinitySpin width="200" color="#4fa94d" />
-        <h1 className="text-3xl">Loading...</h1>
+        <h1 className="text-3xl mr-4">Ładuję</h1>
       </div>
     );
 
@@ -224,11 +224,11 @@ const NFTDropInvidualPage = () => {
 
           {loading ? (
             <p className="pt-2 text-xl text-green-500 animate-pulse">
-              Loading supply count ...
+              Ładownie dostępnych NFT...
             </p>
           ) : (
             <p className="pt-2 text-xl text-green-500">
-              {claimedSupply}/{totalSupply?.toString()} NFT's claimed
+              {claimedSupply}/{totalSupply?.toString()} przyjęte NFT
             </p>
           )}
 
@@ -245,13 +245,13 @@ const NFTDropInvidualPage = () => {
       rounded-full font-bold disabled:bg-gray-400"
         >
           {loading ? (
-            <>loading</>
+            <>Ładuję...</>
           ) : claimedSupply === totalSupply?.toNumber() ? (
-            <>SOLD OUT</>
+            <>WYPRZEDANE</>
           ) : !address ? (
-            <>CONNECT WALLET</>
+            <>Połącz portfel</>
           ) : (
-            <div>Mint NFT ({priceInMatic}MATIC)</div>
+            <div>Odbierz NFT za ({priceInMatic}MATIC)</div>
           )}
         </button>
       </div>
