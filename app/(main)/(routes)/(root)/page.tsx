@@ -7,8 +7,6 @@ import React from "react";
 const OfertyPage = () => {
   const { directListings, auctionListings } = useActiveListings();
 
-  console.log(directListings, auctionListings);
-
   if (directListings.length === 0 && auctionListings.length === 0) {
     return <div>Ładowanie...</div>;
   }

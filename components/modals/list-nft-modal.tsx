@@ -45,6 +45,8 @@ const formSchema = z.object({
 });
 
 const ListNftModal = () => {
+  const [buyNowPrice, setBuyNowPrice] = useState(0);
+  const [auctionPrice, setAuctionPrice] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
 
@@ -59,17 +61,10 @@ const ListNftModal = () => {
   );
 
   // Marketplace contract actions
-  const {
-    mutateAsync: createDirectListing,
-    isLoading: isLoadingDirect,
-    error,
-  } = useCreateDirectListing(contract);
+  const { mutateAsync: createDirectListing } = useCreateDirectListing(contract);
 
-  const {
-    mutateAsync: createAuctionListing,
-    isLoading: isLoadingAuction,
-    error: errorAuction,
-  } = useCreateAuctionListing(contract);
+  const { mutateAsync: createAuctionListing } =
+    useCreateAuctionListing(contract);
 
   const { data, onClose, isOpen } = useModal();
 
@@ -81,11 +76,23 @@ const ListNftModal = () => {
     },
   });
 
+  // Calculate prices for auction listing
+  useEffect(() => {
+    const nowPrice = form.getValues("price");
+    const auctionPrice = form.getValues("price") * 0.3;
+    setBuyNowPrice(nowPrice);
+    setAuctionPrice(auctionPrice);
+  }, [form.watch("price")]);
+
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    let tekst = "Wystawianie NFT na sprzedaż...";
+    if (values.listingType === "auctionListing") {
+      tekst = "Wystawianie NFT na licytację...";
+    }
     try {
-      const notification = toast.loading("Wystawianie NFT na sprzedaż...");
+      const notification = toast.loading(tekst);
       const { listingType, price } = values;
 
       if (networkMismatch) {
@@ -123,6 +130,8 @@ const ListNftModal = () => {
                 id: notification,
               });
               router.push("/");
+              form.reset();
+              onClose();
             },
             onError() {
               toast.error("ERROR! Coś poszło nie tak", {
@@ -154,7 +163,9 @@ const ListNftModal = () => {
               toast.success("Wystawiono NFT na licytację!", {
                 id: notification,
               });
+              form.reset();
               router.push("/");
+              onClose();
             },
             onError(error) {
               toast.error("ERROR! Coś poszło nie tak", {
@@ -165,8 +176,6 @@ const ListNftModal = () => {
           }
         );
       }
-
-      form.reset();
     } catch (error) {
       console.log(error);
     }
@@ -191,7 +200,7 @@ const ListNftModal = () => {
       <DialogContent className="bg-white text-black dark:bg-gray-800 dark:text-white p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Wystaw NFT na sprzedaż
+            Wystaw NFT na rynek
           </DialogTitle>
           <DialogDescription className="text-center text-zinc-500">
             Sprawdź szczegóły swoje NFT, a następnie wybierz typ listingu oraz
@@ -244,8 +253,8 @@ const ListNftModal = () => {
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70">
-                      Cena:
+                    <FormLabel className="uppercase text-xs font-bold text-blue-600">
+                      Cena: [MATIC]
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -265,11 +274,11 @@ const ListNftModal = () => {
                 <div className="text-sm text-gray-400">
                   Cena licytacji:{" "}
                   <span className="font-bold text-green-500">
-                    {form.getValues("price") * 0.3} MATIC
+                    {auctionPrice} MATIC
                   </span>{" "}
                   Cena kup teraz:{" "}
                   <span className="font-bold text-blue-600">
-                    {form.getValues("price")} MATIC
+                    {buyNowPrice} MATIC
                   </span>
                 </div>
               )}
