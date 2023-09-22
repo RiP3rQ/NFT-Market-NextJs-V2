@@ -140,7 +140,7 @@ const ListNftModal = () => {
             tokenId: data.id,
             currencyContractAddress: NATIVE_TOKEN_ADDRESS,
             quantity: 1,
-            minimumBidAmount: price * 0.5,
+            minimumBidAmount: price * 0.3,
             buyoutBidAmount: price,
             bidBufferBps: 500, // 5%
             startTimestamp: new Date(),
@@ -220,7 +220,10 @@ const ListNftModal = () => {
                         Typ listingu:
                       </FormLabel>
                       <FormControl>
-                        <RadioGroup defaultValue="directListing">
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="directListing" id="r1" />
                             <Label htmlFor="r1">Bezpośredni Listing</Label>
@@ -257,6 +260,19 @@ const ListNftModal = () => {
                   </FormItem>
                 )}
               />
+
+              {form.getValues("listingType") === "auctionListing" && (
+                <div className="text-sm text-gray-400">
+                  Cena licytacji:{" "}
+                  <span className="font-bold text-green-500">
+                    {form.getValues("price") * 0.3} MATIC
+                  </span>{" "}
+                  Cena kup teraz:{" "}
+                  <span className="font-bold text-blue-600">
+                    {form.getValues("price")} MATIC
+                  </span>
+                </div>
+              )}
             </div>
             <DialogFooter className=" px-6 py-4">
               <Button
