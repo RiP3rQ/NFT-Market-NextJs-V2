@@ -28,10 +28,7 @@ const MarketplaceCard = ({
   const onClick = () => {
     const url = qs.stringifyUrl(
       {
-        url: `/listing/${id}`,
-        query: {
-          listingType,
-        },
+        url: `/listing/${id}/${listingType}`,
       },
       { skipNull: true }
     );
