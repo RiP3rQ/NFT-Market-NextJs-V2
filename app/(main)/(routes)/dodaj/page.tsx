@@ -1,64 +1,130 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { useAddress, useContract } from "@thirdweb-dev/react";
-import { useRouter } from "next/navigation";
-import React, { FormEvent, useState } from "react";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import React, { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import {
+  useAddress,
+  useContract,
+  useNetworkMismatch,
+  useSwitchChain,
+} from "@thirdweb-dev/react";
+import { Mumbai } from "@thirdweb-dev/chains";
+import { Separator } from "@/components/ui/separator";
+import { useAddPropertyToNftModal } from "@/hooks/use-add-property-to-nft-modal";
+import ReorderCard from "./_components/reorder-card";
+
+const formSchema = z.object({
+  name: z.string().min(3, "Nazwa musi mieć minimum 3 znaki"),
+  description: z.string().min(3, "Nazwa musi mieć minimum 3 znaki"),
+});
 
 const DodajNFT = () => {
   const address = useAddress();
   const router = useRouter();
-  const [preview, setPreview] = useState<string>();
-  const [image, setImage] = useState<File>();
+  const [file, setFile] = useState<File>();
+  const [attributes, setAttributes] = useState<Record<string, string>[]>([]);
+
+  const { data, onClose, onOpen } = useAddPropertyToNftModal();
+
+  useEffect(() => {
+    if (Object.keys(data).length > 0) {
+      // @ts-ignore
+      setAttributes((prev) => [...prev, data]);
+      onClose();
+    }
+  }, [data, setAttributes]);
+
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+    },
+  });
+
+  // Collection Contract for minting NFT
   const { contract } = useContract(
-    process.env.NEXT_PUBLIC_COLLECTION_CONTRACT,
+    process.env.NEXT_PUBLIC_COLLECTION_CONTRACT!,
     "nft-collection"
   );
+  // Switch Networks if wrong
+  const networkMismatch = useNetworkMismatch();
+  const switchChain = useSwitchChain();
 
-  if (!address) {
-    router.push("/");
-    toast.error("Musisz być zalogowany, aby zobaczyć tę stronę");
-  }
+  const isLoading = form.formState.isSubmitting;
 
-  const mintNft = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!contract || !address) return;
-
-    const notification = toast.loading("Tworzę nowy projekt NFT!");
-
-    if (!image) {
-      toast.error("Wybierz zdjęcie!", {
-        id: notification,
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!contract || !address) {
+      toast("Musisz być zalogowany, aby dodać NFT!", {
+        duration: 4000,
+        style: {
+          background: "red",
+          color: "white",
+          fontWeight: "bold",
+          fontSize: "17px",
+          padding: "20px",
+        },
       });
       return;
     }
 
-    // own type for form handling
-    const target = e.target as typeof e.target & {
-      name: { value: string };
-      description: { value: string };
-    };
+    if (networkMismatch) {
+      switchChain(Mumbai.chainId);
+      toast("Błąd sieci. Zmień sieć i spróbuj ponownie!", {
+        duration: 4000,
+        style: {
+          background: "orange",
+          color: "white",
+          fontWeight: "bold",
+          fontSize: "17px",
+          padding: "20px",
+        },
+      });
+      return;
+    }
 
-    const metadata = {
-      name: target.name.value,
-      description: target.description.value,
-      image: image,
-    };
+    const notification = toast.loading("Tworzę nowe NFT!");
 
     try {
-      const tx = await contract.mintTo(address, metadata);
-      const receipt = tx.receipt; // the transaction receipt
-      const tokenId = tx.id; // the id of the NFT minted
-      const nft = await tx.data(); // (optional) fetch details of minted NFT
-
-      toast.success("Huraa! NFT utworzone pomyślnie!", {
-        id: notification,
-      });
-      setTimeout(() => {
-        router.push("/ekwipunek");
-      }, 2000);
+      await contract
+        .mintTo(address, {
+          name: values.name,
+          description: values.description,
+          image: file!,
+          attributes: [
+            {
+              trait_type: "test_type",
+              value: "test_value",
+            },
+          ],
+        })
+        .then((tx) => {
+          console.log("tokenId:", tx.id); // the id of the NFT minted
+          console.log("NFT:", tx.data()); // (optional) fetch details of minted NFT
+          setTimeout(() => {
+            router.push(`/dodaj/${tx.id}`);
+          }, 2000);
+        })
+        .then(() => {
+          toast.success("Huraa! NFT utworzone pomyślnie!", {
+            id: notification,
+          });
+        });
     } catch (error) {
       toast.error("Coś poszło nie tak!", {
         id: notification,
@@ -67,63 +133,95 @@ const DodajNFT = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-full">
-      <main className="max-w-6xl mx-auto p-10 border ">
-        <h1 className="text-4xl font-bold text-center">Stwórz własne NFT</h1>
-        <h2 className="text-xl font-semibold pt-5">Szczegóły tworzonego NFT</h2>
-        <p className="pb-5">
+    <div className="flex justify-center h-fit mt-4">
+      <main className="max-w-7xl mx-auto p-10 border ">
+        <h1 className="text-2xl font-bold text-center">Stwórz własne NFT</h1>
+        <h2 className="text-lg font-semibold pt-5">Szczegóły tworzonego NFT</h2>
+        <p className="pb-5 text-sm">
           Tworząc NFT, tworzysz unikalny token, który jest niepowtarzalny i
           niezależny od innych tokenów, którzy następnie możesz sprzedać lub
           podarować na naszej platformie lub na innej platformie NFT.
         </p>
 
-        <div className="flex flex-col justify-center items-center md:flex-row md:space-x-5 pt-10">
-          <img
-            className="border h-80 w-80 object-contain"
-            src={preview || "https://links.papareact.com/ucj"}
-            alt=""
-          />
+        <hr className="text-white mb-2" />
 
-          <form
-            onSubmit={mintNft}
-            className="flex flex-col h-80 flex-1 p-2 space-y-4"
-          >
-            <label className="font-light">Nazwa:</label>
-            <input
-              className="formField"
-              type="text"
-              placeholder="Nazwa tworzonego NFT..."
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
               name="name"
-              id="name"
+              render={({ field }) => (
+                <FormItem className="">
+                  <FormLabel>Nazwa</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Nazwa" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
 
-            <label className="font-light">Opis:</label>
-            <input
-              className="formField"
-              type="text"
-              placeholder="Opisz swoje dzieło..."
+            <FormField
+              control={form.control}
               name="description"
-              id="description"
+              render={({ field }) => (
+                <FormItem className="">
+                  <FormLabel>Nazwa</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Opis" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
 
-            <label className="font-light">Zdjęcie:</label>
-            <input
-              type="file"
-              onChange={(e) => {
-                if (e.target.files?.[0]) {
-                  setPreview(URL.createObjectURL(e.target.files[0]));
-                  setImage(e.target.files[0]);
-                }
-              }}
-            />
-            <Button
-              type="submit"
-              className="bg-blue-600 font-bold text-white rounded-full py-4 px-10 w-56 mt-auto mx-auto md:ml-auto"
-            >
-              Stwórz NFT
-            </Button>
+            <div className="grid grid-cols-12">
+              <div className="col-span-3">
+                <div className="w-full items-center gap-1.5 mb-2 space-y-2">
+                  <Label htmlFor="picture">Plik</Label>
+                  <Input id="picture" type="file" className="cursor-pointer" />
+                </div>
+                <div className="w-full flex items-center justify-center">
+                  <Button
+                    variant="link"
+                    className="text-xl font-bold hover:underline hover:decoration-pink-600/50 border-2 border-pink-600/50"
+                    disabled={isLoading}
+                  >
+                    Wystaw
+                  </Button>
+                </div>
+              </div>
+              <div className="col-span-1 flex justify-center">
+                <Separator orientation="vertical" />
+              </div>
+              <div className="col-span-8">
+                <div className="flex justify-between items-center">
+                  <Label className="text-lg font-bold">
+                    Dodaj unikalne atrybuty:
+                  </Label>
+                  <Button
+                    type="button"
+                    onClick={() => onOpen()}
+                    className="h-8"
+                  >
+                    Dodaj atrybut
+                  </Button>
+                </div>
+                <Separator className="mt-1 mb-2" />
+
+                {attributes.length > 0
+                  ? attributes.map((attribute, index) => (
+                      <ReorderCard
+                        key={index}
+                        attributeName={attribute.propertyName}
+                        attributeValue={attribute.propertyValue}
+                      />
+                    ))
+                  : null}
+              </div>
+            </div>
           </form>
-        </div>
+        </Form>
       </main>
     </div>
   );

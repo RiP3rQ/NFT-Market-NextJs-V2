@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import ListNftModal from "@/components/modals/list-nft-modal";
 import SortModal from "@/components/modals/sort-modal";
+import AddPropertyToNftModal from "@/components/modals/add-properties-to-nft-modal";
 
 export const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -19,6 +20,7 @@ export const ModalProvider = () => {
     <>
       <ListNftModal />
       <SortModal />
+      <AddPropertyToNftModal />
     </>
   );
 };

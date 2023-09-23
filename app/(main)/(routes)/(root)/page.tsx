@@ -38,31 +38,6 @@ const OfertyPage = () => {
     sortListingsByDirection();
   }, [sortDirection]);
 
-  // const sortListingsByCategory = (offers) => {
-  //   offers.sort((a, b) => {
-  //     const displayValueA = parseFloat(a.currencyValue.displayValue);
-  //     const displayValueB = parseFloat(b.currencyValue.displayValue);
-
-  //     // Compare in descending order
-  //     if (displayValueA < displayValueB) {
-  //       return 1;
-  //     } else if (displayValueA > displayValueB) {
-  //       return -1;
-  //     } else {
-  //       return 0;
-  //     }
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if (!sortDirection) return;
-
-  //   sortListingsByDirection();
-  // }, [sortDirection]);
-
-  console.log(dataDirectListings);
-  console.log(dataAuctionListings);
-
   const sortListingsByDirection = () => {
     const listToSortDirectListings = [...dataDirectListings];
     const listToSortAuctionListings = [...dataAuctionListings];
@@ -102,7 +77,7 @@ const OfertyPage = () => {
         const displayValueA = parseFloat(a.currencyValuePerToken.displayValue);
         const displayValueB = parseFloat(b.currencyValuePerToken.displayValue);
 
-        // Compare in descending order
+        // Compare in ascending order
         if (displayValueA < displayValueB) {
           return -1;
         } else if (displayValueA > displayValueB) {
@@ -117,7 +92,7 @@ const OfertyPage = () => {
         const displayValueA = parseFloat(a.buyoutCurrencyValue.displayValue);
         const displayValueB = parseFloat(b.buyoutCurrencyValue.displayValue);
 
-        // Compare in descending order
+        // Compare in ascending order
         if (displayValueA < displayValueB) {
           return -1;
         } else if (displayValueA > displayValueB) {
