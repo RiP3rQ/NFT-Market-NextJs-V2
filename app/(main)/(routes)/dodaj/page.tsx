@@ -68,6 +68,13 @@ const DodajNFT = () => {
 
   const isLoading = form.formState.isSubmitting;
 
+  const onReorder = (
+    updateData: { propertyName: string; propertyValue: string }[]
+  ) => {
+    setAttributes(updateData);
+    toast.success("Pozycje atrybutów zaktualizowane!");
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!contract || !address) {
       toast("Musisz być zalogowany, aby dodać NFT!", {
@@ -209,15 +216,9 @@ const DodajNFT = () => {
                 </div>
                 <Separator className="mt-1 mb-2" />
 
-                {attributes.length > 0
-                  ? attributes.map((attribute, index) => (
-                      <ReorderCard
-                        key={index}
-                        attributeName={attribute.propertyName}
-                        attributeValue={attribute.propertyValue}
-                      />
-                    ))
-                  : null}
+                {attributes.length > 0 ? (
+                  <ReorderCard attributes={attributes} onReorder={onReorder} />
+                ) : null}
               </div>
             </div>
           </form>

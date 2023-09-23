@@ -36,8 +36,6 @@ const AddPropertyToNftModal = () => {
   const [isMounted, setIsMounted] = useState(false);
   const { data, onClose, isOpen } = useAddPropertyToNftModal();
 
-  console.log(data);
-
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
