@@ -98,7 +98,7 @@ const ListNftModal = () => {
       if (networkMismatch) {
         switchChain(Mumbai.chainId);
         toast("Błąd sieci. Zmień sieć i spróbuj ponownie!", {
-          duration: 8000,
+          duration: 4000,
           style: {
             background: "orange",
             color: "white",
@@ -116,7 +116,8 @@ const ListNftModal = () => {
           {
             assetContractAddress: data.assetContractAddress!,
             tokenId: data.id,
-            currencyContractAddress: NATIVE_TOKEN_ADDRESS,
+            currencyContractAddress:
+              process.env.NEXT_PUBLIC_PAGE_CURRENCY_CONTRACT!,
             pricePerToken: price,
             quantity: 1,
             startTimestamp: new Date(),
@@ -147,7 +148,8 @@ const ListNftModal = () => {
           {
             assetContractAddress: data.assetContractAddress!,
             tokenId: data.id,
-            currencyContractAddress: NATIVE_TOKEN_ADDRESS,
+            currencyContractAddress:
+              process.env.NEXT_PUBLIC_PAGE_CURRENCY_CONTRACT!,
             quantity: 1,
             minimumBidAmount: price * 0.3,
             buyoutBidAmount: price,
@@ -254,7 +256,7 @@ const ListNftModal = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="uppercase text-xs font-bold text-blue-600">
-                      Cena: [MATIC]
+                      Cena: [RIPERS]
                     </FormLabel>
                     <FormControl>
                       <Input

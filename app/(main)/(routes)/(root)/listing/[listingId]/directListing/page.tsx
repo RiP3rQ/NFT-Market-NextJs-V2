@@ -1,23 +1,20 @@
 "use client";
 
 import {
-  ChainId,
   MediaRenderer,
-  NATIVE_TOKENS,
-  NATIVE_TOKEN_ADDRESS,
   useAddress,
   useContract,
   useDirectListing,
   useNetworkMismatch,
   useSwitchChain,
 } from "@thirdweb-dev/react";
-import { ethers } from "ethers";
 import { UserCircleIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Mumbai } from "@thirdweb-dev/chains";
 import toast from "react-hot-toast";
 import { InfinitySpin } from "react-loader-spinner";
+import { Separator } from "@/components/ui/separator";
 
 const DirectListing = ({ params }: { params: { listingId: string } }) => {
   const address = useAddress();
@@ -32,33 +29,32 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
     "marketplace-v3"
   );
 
-  // Marketplace contract actions
+  // Listing data
+  const { data: listing, isLoading } = useDirectListing(contract, listingId);
+
+  // Marketplace contract actions [get offers for specific nft]
   useEffect(() => {
-    if (!contract) return;
+    if (!contract && !listingId) return;
 
     const getOffers = async () => {
       const offers = await contract?.offers
         ?.getAllValid()
         .then((offers) => {
           setOffers(offers);
+          console.log("Oferty:", offers);
         })
         .catch((error) => {
           console.log(error);
           return;
         }); // offers for nft
-
-      console.log(offers);
     };
 
     getOffers();
-  }, [contract]);
+  }, [contract, listingId]);
 
   // Switch Networks if wrong
   const networkMismatch = useNetworkMismatch();
   const switchChain = useSwitchChain();
-
-  // Listing data
-  const { data: listing, isLoading } = useDirectListing(contract, listingId);
 
   // Buy Now NFT function
   const buyNft = async () => {
@@ -85,7 +81,7 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
         return error;
       })
       .finally(() => {
-        setBidAmount(0);
+        setBidAmount(0.0001);
       });
 
     console.log(txResult);
@@ -93,6 +89,10 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
 
   // Accept an offer function
   const acceptDirectOffer = async (offerId: string) => {
+    if (networkMismatch) {
+      switchChain(Mumbai.chainId);
+      return;
+    }
     // Toast notification to say accepting offer
     const notification = toast.loading("Akceptowanie oferty..");
 
@@ -113,29 +113,42 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
     console.log(txResult);
   };
 
-  //TODO: POPRAWIĆ TWORZENIE OFERT
-
   // Make an offer function
   const makeOffer = async () => {
+    if (networkMismatch) {
+      switchChain(Mumbai.chainId);
+      return;
+    }
     // Toast notification to making offer
     const notification = toast.loading("Tworzę ofertę...");
 
     if (!contract || !listing || !bidAmount) return;
 
     console.log(bidAmount);
+    console.log(parseFloat(listing.currencyValuePerToken.displayValue));
 
-    console.log(listing);
+    if (bidAmount >= parseFloat(listing.currencyValuePerToken.displayValue)) {
+      // Toast notification to say buying NFT
+      toast.success(`Przebiłeś cenę "Kup Teraz"! Zamiast tego kupuję`, {
+        id: notification,
+      });
+      buyNft();
+      return;
+    }
 
     const txResult = await contract?.offers
       .makeOffer({
         assetContractAddress: listing.assetContractAddress, // Required - the contract address of the NFT to offer on
         tokenId: listing.id, // Required - the token ID to offer on
         totalPrice: bidAmount, // Required - the price to offer in the currency specified
-        currencyContractAddress: NATIVE_TOKEN_ADDRESS, // Required - the contract address of the currency to offer in
+        currencyContractAddress:
+          process.env.NEXT_PUBLIC_PAGE_CURRENCY_CONTRACT!, // Required - the contract address of the currency to offer in
+        endTimestamp: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 10), // Optional - Defaults to 10 years from now
+        quantity: 1, // Optional - defaults to 1
       })
-      .then((tx) => {
+      .then(() => {
         toast.success("Oferta wysłana!", { id: notification });
-        return tx;
+        router.refresh();
       })
       .catch((error) => {
         toast.error("Oferta nie mogła zostać wysłana.", { id: notification });
@@ -168,8 +181,8 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
 
   // Actual page
   return (
-    <div>
-      <main className="max-w-6xl mx-auto p-2 flex flex-col lg:flex-row space-y-10 space-x-5 pr-10">
+    <div className="flex flex-col h-full w-full">
+      <main className="max-w-6xl mx-auto p-2 flex flex-col lg:flex-row space-x-5 pr-10">
         <div className="p-10 border mx-auto lg:mx-0 max-w-md lg:max-w-xl">
           <MediaRenderer src={listing.asset.image} />
         </div>
@@ -186,6 +199,8 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
                 listing.creatorAddress.slice(-5)}
             </p>
           </div>
+
+          <Separator />
 
           <div className="grid grid-cols-2 items-center py-2">
             <p className="font-bold">Typ sprzedaży:</p>
@@ -207,21 +222,24 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
           </div>
           {/* If direct, show offers here ... */}
           {offers && (
-            <div className="grid grid-cols-2 gap-y-2">
-              <p className="font-bold">Oferty: </p>
-              <p className="font-bold">
-                {offers.length > 0 ? offers.length : 0}
-              </p>
-
+            <>
+              <Separator />
+              <div className="grid grid-cols-2 gap-y-2">
+                <p className="font-bold">Liczba ofert: </p>
+                <p className="font-bold flex items-center justify-center">
+                  {offers.length > 0 ? offers.length : 0}
+                </p>
+              </div>
+              <Separator />
               {offers.map((offer) => (
-                <>
+                <div className="grid grid-cols-2 gap-y-2" key={offer.id}>
                   <p className="flex items-center ml-5 text-sm italic">
                     <UserCircleIcon className="h-3 mr-2" />
                     {offer.offerorAddress.slice(0, 5) +
                       "..." +
                       offer.offerorAddress.slice(-5)}
                   </p>
-                  <div>
+                  <div className="flex items-center justify-center gap-4">
                     <p
                       key={
                         offer.tokenId +
@@ -230,32 +248,34 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
                       }
                       className="text-sm italic"
                     >
-                      {ethers.utils.formatEther(
-                        offer.currencyValue.displayValue
-                      )}{" "}
-                      {NATIVE_TOKENS[ChainId.Mumbai].symbol}
+                      {offer.currencyValue.displayValue}{" "}
+                      {offer.currencyValue.name}
                     </p>
 
                     {listing.creatorAddress === address && (
                       <button
                         onClick={() => acceptDirectOffer(offer.id)}
-                        className="p-2 w-32 bg-red-500/50 rounded-lg 
+                        className="p-2 w-32 bg-green-500 rounded-lg 
                         font-bold text-sm cursor-pointer"
                       >
                         Zaakceptuj
                       </button>
                     )}
                   </div>
-                </>
+                </div>
               ))}
-            </div>
+            </>
           )}
 
-          <div className="grid grid-cols-2 space-y-2 items-center justify-end">
-            <hr className="col-span-2" />
+          <Separator />
 
+          <div className="grid grid-cols-2 space-y-2 items-center justify-end">
+            <span className="col-span-2 font-bold text-red-500 text-[8px] text-center">
+              Jeżeli chcesz złożyć pierwszą ofertę na tej platformie użyj
+              przycisku *zdobądz walutę*
+            </span>
             <p className="col-span-2 font-bold">
-              Zaoferuj niższa cenę [MATIC]:
+              Zaoferuj niższa cenę [RIPERS]:
             </p>
 
             <input
@@ -265,12 +285,14 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
               onChange={(e) => setBidAmount(e.target.valueAsNumber)}
               value={bidAmount}
             />
-            <button
-              onClick={makeOffer}
-              className="bg-red-600 font-bold text-white rounded-full w-44 py-4 px-10"
-            >
-              Oferuj
-            </button>
+            <div className="flex items-center justify-center">
+              <button
+                onClick={makeOffer}
+                className="bg-red-600 font-bold text-white rounded-full w-44 py-4 px-10 "
+              >
+                Oferuj
+              </button>
+            </div>
           </div>
         </section>
       </main>

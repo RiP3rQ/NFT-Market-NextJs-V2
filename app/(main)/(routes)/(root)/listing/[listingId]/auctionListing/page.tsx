@@ -1,17 +1,13 @@
 "use client";
 
 import {
-  ChainId,
   MediaRenderer,
-  NATIVE_TOKENS,
-  NATIVE_TOKEN_ADDRESS,
   useAddress,
   useContract,
   useEnglishAuction,
   useNetworkMismatch,
   useSwitchChain,
 } from "@thirdweb-dev/react";
-import { ethers } from "ethers";
 import { UserCircleIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";

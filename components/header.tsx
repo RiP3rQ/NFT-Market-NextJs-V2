@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import ConnectWalletButton from "@/components/connect-wallet-button";
 import { useRouter } from "next/navigation";
 import { ModeToggle } from "@/components/theme-button";
+import { CurrencyMintButton } from "@/components/currency-mint-button";
 
 const Header = () => {
   const router = useRouter();
@@ -25,6 +26,7 @@ const Header = () => {
         </div>
         <div className="flex items-center justify-center space-x-3">
           <ModeToggle />
+          <CurrencyMintButton />
           <ConnectWalletButton />
         </div>
       </div>
