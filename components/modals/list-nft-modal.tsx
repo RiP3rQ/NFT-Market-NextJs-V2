@@ -71,7 +71,7 @@ const ListNftModal = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       listingType: "directListing",
-      price: 0.001,
+      price: 1,
     },
   });
 
@@ -275,11 +275,11 @@ const ListNftModal = () => {
                 <div className="text-sm text-gray-400">
                   Cena licytacji:{" "}
                   <span className="font-bold text-green-500">
-                    {auctionPrice} MATIC
+                    {auctionPrice} [RIPERS]
                   </span>{" "}
                   Cena kup teraz:{" "}
                   <span className="font-bold text-blue-600">
-                    {buyNowPrice} MATIC
+                    {buyNowPrice} [RIPERS]
                   </span>
                 </div>
               )}
