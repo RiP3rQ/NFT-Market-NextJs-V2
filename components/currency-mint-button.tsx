@@ -4,24 +4,20 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   useAddress,
-  useBalance,
   useContract,
   useNetworkMismatch,
   useSwitchChain,
 } from "@thirdweb-dev/react";
 import { Mumbai } from "@thirdweb-dev/chains";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useCurrencyBalance } from "@/hooks/use-get-currency-ballance";
 
 export const CurrencyMintButton = () => {
   // Wallet address
   const address = useAddress();
-  const router = useRouter();
 
   // Website currency balance
-  const currencyBalance = useBalance(
-    process.env.NEXT_PUBLIC_PAGE_CURRENCY_CONTRACT!
-  );
+  const currencyBalance = useCurrencyBalance();
 
   // Switch Networks if wrong
   const networkMismatch = useNetworkMismatch();
@@ -48,11 +44,10 @@ export const CurrencyMintButton = () => {
       await token?.erc20
         .claim(100)
         .then(() => {
-          toast.success("Uzyskano 100x[RIPERS]!", { id: notification });
-          router.refresh();
-        })
-        .then(() => {
-          router.refresh();
+          toast.success("Uzyskano 100x[RIPERS]!");
+          toast.loading("Odśwież stronę, żeby zobaczyć efekt...", {
+            id: notification,
+          });
         })
         .catch((error) => {
           toast.error("Token nie mógł zostać wygenerowany.", {

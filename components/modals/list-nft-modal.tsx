@@ -37,7 +37,6 @@ import {
 import { useModal } from "@/hooks/use-modal-store";
 import toast from "react-hot-toast";
 import { Mumbai } from "@thirdweb-dev/chains";
-import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
 
 const formSchema = z.object({
   listingType: z.string().optional(),

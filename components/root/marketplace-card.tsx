@@ -37,7 +37,7 @@ const MarketplaceCard = ({
   };
 
   return (
-    <div key={id}>
+    <div key={id} className="p-4">
       <div
         className="flex flex-col card hover:scale-105 translate-all duration-150 ease-out cursor-pointer"
         onClick={onClick}
@@ -61,8 +61,8 @@ const MarketplaceCard = ({
           </div>
 
           <div
-            className={`flex items-center space-x-1 justify-end text-xs 
-                  border w-fit ml-auto p-2 rounded-lg text-white
+            className={`flex items-center space-x-1 justify-center w-full text-xs 
+                  border p-2 rounded-lg text-white
                    ${
                      listingType === "directListing"
                        ? "bg-blue-500"
