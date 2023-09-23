@@ -104,11 +104,11 @@ const SortModal = () => {
                           <Button
                             type="button"
                             onClick={() =>
-                              form.setValue("sortCategory", "Bezpośredni")
+                              form.setValue("sortCategory", "directListing")
                             }
                             className={cn(
                               "flex items-center justify-center space-x-2 py-3 px-5 bg-slate-400",
-                              form.watch("sortCategory") == "Bezpośredni" &&
+                              form.watch("sortCategory") == "directListing" &&
                                 "bg-blue-600 border-2 border-pink-600/50 text-white"
                             )}
                           >
@@ -117,11 +117,11 @@ const SortModal = () => {
                           <Button
                             type="button"
                             onClick={() =>
-                              form.setValue("sortCategory", "Licytacja")
+                              form.setValue("sortCategory", "auctionListing")
                             }
                             className={cn(
                               "flex items-center justify-center space-x-2 py-3 px-5 bg-slate-400",
-                              form.watch("sortCategory") == "Licytacja" &&
+                              form.watch("sortCategory") == "auctionListing" &&
                                 "bg-blue-600 border-2 border-pink-600/50 text-white"
                             )}
                           >
@@ -129,12 +129,10 @@ const SortModal = () => {
                           </Button>
                           <Button
                             type="button"
-                            onClick={() =>
-                              form.setValue("sortCategory", "Wszystkie")
-                            }
+                            onClick={() => form.setValue("sortCategory", "all")}
                             className={cn(
                               "flex items-center justify-center space-x-2 py-3 px-5 bg-slate-400",
-                              form.watch("sortCategory") == "Wszystkie" &&
+                              form.watch("sortCategory") == "all" &&
                                 "bg-blue-600 border-2 border-pink-600/50 text-white"
                             )}
                           >

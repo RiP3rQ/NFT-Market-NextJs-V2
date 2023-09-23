@@ -9,16 +9,13 @@ interface ModalData {
 interface SortModal {
   data: ModalData;
   isOpen: boolean;
-  onOpen: (data?: ModalData) => void;
+  onOpen: () => void;
   onClose: (data?: ModalData) => void;
 }
 
 export const useSortModal = create<SortModal>((set) => ({
-  data: {
-    sortCategory: "Wszystkie",
-    sortDirection: "asc",
-  },
+  data: {},
   isOpen: false,
-  onOpen: (data = {}) => set({ isOpen: true, data }),
+  onOpen: () => set({ isOpen: true }),
   onClose: (data = {}) => set({ isOpen: false, data }),
 }));
