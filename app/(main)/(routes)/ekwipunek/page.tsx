@@ -42,38 +42,6 @@ const EkwipunekPage = () => {
   const ownedNftsFromDrop = useOwnedNFTs(dropContract, address);
   const ownedNftsFromDropPunks = useOwnedNFTs(dropContractPunks, address);
 
-  // TODO: Check if any NFTs from ownedNfts are in directListings or auctionListings
-  //  Array with all owned NFTs
-  // let firstArray = [];
-  // firstArray.push(ownedNfts?.data);
-  // firstArray.push(ownedNftsFromDrop?.data);
-  // firstArray.push(ownedNftsFromDropPunks?.data);
-  // console.log("First array: ", firstArray);
-
-  // console.log("Owned NFts: ", ownedNfts?.data);
-
-  //  Array with all NFTs from marketplace
-  // const secondArray = [...directListings, ...auctionListings];
-  // console.log("Second array: ", secondArray);
-
-  //  Check if any data in the first array is comparable to any data in the second array
-  // const exists = firstArray.some((obj1) => {
-  //   return secondArray.some((obj2) => {
-  //      Compare the data in the objects (you can customize the comparison logic)
-  //     return (
-  //       obj1.metadata.id === obj2.asset.id &&
-  //       obj1.metadata.name === obj2.asset.name
-  //     );
-  //   });
-  // });
-
-  //  Log "istnieje" if a match is found
-  // if (exists) {
-  //   console.log("istnieje");
-  // }
-
-  // console.log(directListings, auctionListings);
-
   return (
     <div className="flex flex-col h-full w-full">
       <main className="p-10 pt-2">
