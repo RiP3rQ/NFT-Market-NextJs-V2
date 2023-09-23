@@ -29,7 +29,13 @@ const NftCard = ({
         onOpen({ image, title, description, id, assetContractAddress })
       }
     >
-      <MediaRenderer src={image} className="h-48 rounded-lg" />
+      <MediaRenderer
+        key={title}
+        src={image}
+        className="h-48 rounded-lg"
+        poster="https://res.cloudinary.com/dr3jjyqgi/image/upload/v1695510077/kpsszibzfuthyaqz6v9j.avif"
+        requireInteraction={true}
+      />
       <div className="w-[300px] inline-block text-center">
         <p className="text-lg truncate font-bold">{title}</p>
         <p className="text-xs mx-2 truncate">{description}</p>

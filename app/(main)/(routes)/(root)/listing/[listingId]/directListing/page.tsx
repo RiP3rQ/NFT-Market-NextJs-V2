@@ -237,6 +237,7 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
                       // @ts-ignore
                       listing.asset.attributes?.map((attribute) => (
                         <AttributeBlock
+                          key={attribute.trait_type + attribute.value}
                           trait_type={attribute.trait_type}
                           value={attribute.value}
                         />

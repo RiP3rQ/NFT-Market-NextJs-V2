@@ -210,7 +210,13 @@ const ListNftModal = () => {
         </DialogHeader>
         <hr />
         <div className="flex flex-col items-center justify-center space-x-4 mt-2">
-          <MediaRenderer src={data?.image} className="h-48 rounded-lg" />
+          <MediaRenderer
+            key={data?.title}
+            src={data?.image}
+            className="h-48 rounded-lg"
+            poster="https://res.cloudinary.com/dr3jjyqgi/image/upload/v1695510077/kpsszibzfuthyaqz6v9j.avif"
+            requireInteraction={true}
+          />
           <div className="w-[400px] inline-block text-center">
             <p className="text-lg font-bold">{data?.title}</p>
             <p className="text-xs ">{data?.description}</p>
