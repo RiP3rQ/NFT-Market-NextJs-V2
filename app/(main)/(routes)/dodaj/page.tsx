@@ -41,6 +41,9 @@ const DodajNFT = () => {
 
   const { data, onClose, onOpen } = useAddPropertyToNftModal();
 
+  console.log(file);
+  console.log(attributes);
+
   useEffect(() => {
     if (Object.keys(data).length > 0) {
       // @ts-ignore
@@ -68,9 +71,7 @@ const DodajNFT = () => {
 
   const isLoading = form.formState.isSubmitting;
 
-  const onReorder = (
-    updateData: { propertyName: string; propertyValue: string }[]
-  ) => {
+  const onReorder = (updateData: { trait_type: string; value: string }[]) => {
     setAttributes(updateData);
     toast.success("Pozycje atrybutów zaktualizowane!");
   };
@@ -113,29 +114,26 @@ const DodajNFT = () => {
           name: values.name,
           description: values.description,
           image: file!,
-          attributes: [
-            {
-              trait_type: "test_type",
-              value: "test_value",
-            },
-          ],
+          attributes: attributes,
         })
-        .then((tx) => {
-          console.log("tokenId:", tx.id); // the id of the NFT minted
-          console.log("NFT:", tx.data()); // (optional) fetch details of minted NFT
+        .then(() => {
           setTimeout(() => {
-            router.push(`/dodaj/${tx.id}`);
+            router.push(`/ekwipunek`);
           }, 2000);
         })
         .then(() => {
           toast.success("Huraa! NFT utworzone pomyślnie!", {
             id: notification,
           });
+        })
+        .catch((error) => {
+          console.log(error);
+          toast.error("Coś poszło nie tak!", {
+            id: notification,
+          });
         });
     } catch (error) {
-      toast.error("Coś poszło nie tak!", {
-        id: notification,
-      });
+      console.log(error);
     }
   };
 
@@ -186,7 +184,12 @@ const DodajNFT = () => {
               <div className="col-span-3">
                 <div className="w-full items-center gap-1.5 mb-2 space-y-2">
                   <Label htmlFor="picture">Plik</Label>
-                  <Input id="picture" type="file" className="cursor-pointer" />
+                  <Input
+                    id="picture"
+                    type="file"
+                    className="cursor-pointer"
+                    onChange={(e) => setFile(e.target.files?.[0])}
+                  />
                 </div>
                 <div className="w-full flex items-center justify-center">
                   <Button

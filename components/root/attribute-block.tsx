@@ -9,6 +9,7 @@ type Props = {
 const AttributeBlock = ({ trait_type, value }: Props) => {
   return (
     <div
+      id={trait_type}
       key={trait_type}
       className="flex flex-col items-center justify-center border bg-slate-700 rounded-lg h-20 w-full"
     >

@@ -28,8 +28,8 @@ import { useAddPropertyToNftModal } from "@/hooks/use-add-property-to-nft-modal"
 import { Input } from "../ui/input";
 
 const formSchema = z.object({
-  propertyName: z.string().min(2, "Nazwa musi mieć minimum 2 znaki"),
-  propertyValue: z.string().min(2, "Wartość musi mieć minimum 2 znaki"),
+  trait_type: z.string().min(2, "Nazwa musi mieć minimum 2 znaki"),
+  value: z.string().min(2, "Wartość musi mieć minimum 2 znaki"),
 });
 
 const AddPropertyToNftModal = () => {
@@ -39,22 +39,21 @@ const AddPropertyToNftModal = () => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      propertyName: "",
-      propertyValue: "",
+      trait_type: "",
+      value: "",
     },
   });
 
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const { propertyName, propertyValue } = values;
+    const { trait_type, value } = values;
 
-    if (!propertyName || !propertyValue)
-      return toast.error("Uzupełnij wszystkie pola!");
+    if (!trait_type || !value) return toast.error("Uzupełnij wszystkie pola!");
 
     onClose({
-      propertyName,
-      propertyValue,
+      trait_type,
+      value,
     });
     form.reset();
   };
@@ -93,7 +92,7 @@ const AddPropertyToNftModal = () => {
               <div className="col-span-1">
                 <FormField
                   control={form.control}
-                  name="propertyName"
+                  name="trait_type"
                   render={({ field }) => (
                     <FormItem className="">
                       <FormLabel>Nazwa atrybutu</FormLabel>
@@ -108,7 +107,7 @@ const AddPropertyToNftModal = () => {
               <div className="col-span-1">
                 <FormField
                   control={form.control}
-                  name="propertyValue"
+                  name="value"
                   render={({ field }) => (
                     <FormItem className="">
                       <FormLabel>Wartość atrybutu</FormLabel>

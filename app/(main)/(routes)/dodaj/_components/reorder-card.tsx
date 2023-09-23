@@ -13,9 +13,7 @@ import React from "react";
 
 interface Props {
   attributes: Record<string, string>[];
-  onReorder: (
-    updateData: { propertyName: string; propertyValue: string }[]
-  ) => void;
+  onReorder: (updateData: { trait_type: string; value: string }[]) => void;
 }
 
 const ReorderCard = ({ attributes, onReorder }: Props) => {
@@ -40,9 +38,9 @@ const ReorderCard = ({ attributes, onReorder }: Props) => {
     onReorder(items);
   };
 
-  const onDelete = (propertyName: string) => {
+  const onDelete = (trait_type: string) => {
     const updatedAttributes = attributes.filter(
-      (attribute) => attribute.propertyName !== propertyName
+      (attribute) => attribute.trait_type !== trait_type
     );
 
     // @ts-ignore
@@ -60,8 +58,8 @@ const ReorderCard = ({ attributes, onReorder }: Props) => {
           <div {...provided.droppableProps} ref={provided.innerRef}>
             {attributes.map((attribute, index) => (
               <Draggable
-                key={attribute.propertyName}
-                draggableId={attribute.propertyName}
+                key={attribute.trait_type}
+                draggableId={attribute.trait_type}
                 index={index}
               >
                 {(provided) => (
@@ -72,12 +70,12 @@ const ReorderCard = ({ attributes, onReorder }: Props) => {
                     >
                       <div className="flex flex-row items-center justify-between mr-5">
                         <Grip className="h-5 w-5" />
-                        {attribute.propertyName}
+                        {attribute.trait_type}
                       </div>
                       <div className="flex flex-row items-center justify-between ml-5 ">
-                        {attribute.propertyValue}
+                        {attribute.value}
                         <Trash
-                          onClick={() => onDelete(attribute.propertyName)}
+                          onClick={() => onDelete(attribute.trait_type)}
                           className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
                         />
                       </div>

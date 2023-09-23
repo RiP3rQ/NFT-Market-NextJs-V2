@@ -2,8 +2,8 @@ import { BigNumberish } from "ethers";
 import { create } from "zustand";
 
 interface AttributesData {
-  propertyName?: string;
-  propertyValue?: string;
+  trait_type?: string;
+  value?: string;
 }
 
 interface AddPropertyModal {
