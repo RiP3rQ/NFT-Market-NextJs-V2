@@ -158,7 +158,7 @@ const NFTDropInvidualPage = () => {
           );
 
           router.push(url);
-        }, 3000);
+        }, 1000);
       })
       .catch(() =>
         toast("Ups! Coś poszło nie tak.", {

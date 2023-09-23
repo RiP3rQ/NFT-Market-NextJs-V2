@@ -39,13 +39,26 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
     if (!contract || !listing) return;
 
     const getOffers = async () => {
-      const offers = await contract?.offers
+      await contract?.offers
         ?.getAllValid({
           tokenId: listing!.tokenId,
         })
         .then((offers) => {
+          // sorting offers by price
+          offers.sort((a, b) => {
+            const displayValueA = parseFloat(a.currencyValue.displayValue);
+            const displayValueB = parseFloat(b.currencyValue.displayValue);
+
+            // Compare in descending order
+            if (displayValueA < displayValueB) {
+              return 1;
+            } else if (displayValueA > displayValueB) {
+              return -1;
+            } else {
+              return 0;
+            }
+          });
           setOffers(offers);
-          console.log("Oferty:", offers);
         })
         .catch((error) => {
           console.log(error);
@@ -76,7 +89,9 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
       .buyFromListing(listingId, 1, address)
       .then((tx) => {
         toast.success("Zakupiono pomyślnie!", { id: notification });
-        router.push("/ekwipunek");
+        setTimeout(() => {
+          router.push(`/ekwipunek`);
+        }, 1000);
         return tx;
       })
       .catch((error) => {
@@ -104,14 +119,15 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
       .acceptOffer(offerId)
       .then((tx) => {
         toast.success("Oferta zaakceptowana!", { id: notification });
-        router.push(`/`);
+        setTimeout(() => {
+          router.push(`/`);
+        }, 2000);
       })
       .catch((error) => {
         toast.error("Oferta nie mogła zostać zaakceptowana.", {
           id: notification,
         });
         console.log(error);
-        return error;
       });
 
     console.log(txResult);
@@ -137,7 +153,7 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
       return;
     }
 
-    const txResult = await contract?.offers
+    await contract?.offers
       .makeOffer({
         assetContractAddress: listing.assetContractAddress, // Required - the contract address of the NFT to offer on
         tokenId: listing.tokenId, // Required - the token ID to offer on
@@ -149,15 +165,15 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
       })
       .then(() => {
         toast.success("Oferta wysłana!", { id: notification });
-        router.push(`/listing/${listingId}/directListing`);
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       })
       .catch((error) => {
         toast.error("Oferta nie mogła zostać wysłana.", { id: notification });
         console.log(error);
       });
   };
-
-  console.log(listing);
 
   // Loader
   if (isLoading)

@@ -75,52 +75,54 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
     // Toast notification to say buying NFT
     const notification = toast.loading("Rozpocząto proces kupna...");
 
-    const txResult = await contract.englishAuctions
+    await contract.englishAuctions
       .buyoutAuction(listingId)
       .then((tx) => {
         toast.success("Zakupiono pomyślnie!", { id: notification });
-        router.push("/ekwipunek");
-        return tx;
+        setTimeout(() => {
+          router.push(`/ekwipunek`);
+        }, 1000);
       })
       .catch((error) => {
         toast.error("UPS! Coś poszło nie tak.", { id: notification });
         console.log(error);
         return error;
-      })
-      .finally(() => {
-        setBidAmount(0);
       });
-
-    console.log(txResult);
   };
 
   // Make an offer function
   const makeBid = async () => {
+    if (networkMismatch) {
+      switchChain(Mumbai.chainId);
+      return;
+    }
+
+    if (!listingId || !contract || !listing) return;
+
+    if (!bidAmount) return toast.error("Wpisz kwotę licytacji!");
+
+    if (bidAmount < Number(minimumNextBid?.displayValue))
+      return toast.error("Kwota licytacji musi być większa od minimalnej!");
     // Toast notification to making offer
-    const notification = toast.loading("Making bid...");
+    const notification = toast.loading("Składanie oferty...");
 
     if (!contract || !listing || !bidAmount) return;
 
-    console.log(bidAmount);
-
-    console.log(listing);
-
-    const txResult = await contract.englishAuctions
+    await contract.englishAuctions
       .makeBid(listingId, bidAmount)
       .then((tx) => {
-        toast.success("Bid send", { id: notification });
-        return tx;
+        toast.success("Pomyślnie zalicytowano!", { id: notification });
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       })
       .catch((error) => {
-        toast.error("Bid couldn't be send", { id: notification });
+        toast.error("Licytacja nieudana! Spróbuj ponownie.", {
+          id: notification,
+        });
         console.log(error);
         return error;
-      })
-      .finally(() => {
-        setBidAmount(0);
       });
-
-    console.log(txResult);
   };
 
   console.log(listing);
