@@ -19,9 +19,11 @@ import { Button } from "@/components/ui/button";
 import AttributeBlock from "@/components/root/attribute-block";
 
 const DirectListing = ({ params }: { params: { listingId: string } }) => {
+  const [isSomethingOnPageLoading, setIsSomethingOnPageLoading] =
+    useState(false);
   const address = useAddress();
   const router = useRouter();
-  const [bidAmount, setBidAmount] = useState(0.0001);
+  const [bidAmount, setBidAmount] = useState(0.1);
   const [offers, setOffers] = useState<any[]>([]);
   const { listingId } = params;
 
@@ -82,10 +84,13 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
 
     if (!listingId || !contract || !listing) return;
 
+    // Disable all buttons on page
+    setIsSomethingOnPageLoading(true);
+
     // Toast notification to say buying NFT
     const notification = toast.loading("Rozpocząto proces kupna...");
 
-    const txResult = await contract.directListings
+    await contract.directListings
       .buyFromListing(listingId, 1, address)
       .then((tx) => {
         toast.success("Zakupiono pomyślnie!", { id: notification });
@@ -100,10 +105,9 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
         return error;
       })
       .finally(() => {
-        setBidAmount(0.0001);
+        setBidAmount(0.1);
+        setIsSomethingOnPageLoading(false);
       });
-
-    console.log(txResult);
   };
 
   // Accept an offer function
@@ -112,10 +116,14 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
       switchChain(Mumbai.chainId);
       return;
     }
+
+    // Disable all buttons on page
+    setIsSomethingOnPageLoading(true);
+
     // Toast notification to say accepting offer
     const notification = toast.loading("Akceptowanie oferty..");
 
-    const txResult = await contract?.offers
+    await contract?.offers
       .acceptOffer(offerId)
       .then((tx) => {
         toast.success("Oferta zaakceptowana!", { id: notification });
@@ -128,9 +136,10 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
           id: notification,
         });
         console.log(error);
+      })
+      .finally(() => {
+        setIsSomethingOnPageLoading(false);
       });
-
-    console.log(txResult);
   };
 
   // Make an offer function
@@ -139,6 +148,10 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
       switchChain(Mumbai.chainId);
       return;
     }
+
+    // Disable all buttons on page
+    setIsSomethingOnPageLoading(true);
+
     // Toast notification to making offer
     const notification = toast.loading("Tworzę ofertę...");
 
@@ -172,6 +185,10 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
       .catch((error) => {
         toast.error("Oferta nie mogła zostać wysłana.", { id: notification });
         console.log(error);
+      })
+      .finally(() => {
+        setBidAmount(0.1);
+        setIsSomethingOnPageLoading(false);
       });
   };
 
@@ -257,6 +274,7 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
             </p>
 
             <Button
+              disabled={isSomethingOnPageLoading}
               onClick={buyNft}
               className="col-start-2 mt-2 bg-blue-600 font-bold
                text-white rounded-full w-44 py-4 px-10"
@@ -306,6 +324,7 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
 
                     {listing.creatorAddress === address && (
                       <Button
+                        disabled={isSomethingOnPageLoading}
                         onClick={() => acceptDirectOffer(offer.id)}
                         className="p-2 w-32 bg-green-500 rounded-lg 
                         font-bold text-sm cursor-pointer"
@@ -335,6 +354,7 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
             />
             <div className="flex items-center justify-center">
               <Button
+                disabled={isSomethingOnPageLoading}
                 onClick={() => makeOffer()}
                 className="bg-green-600 font-bold text-white rounded-full w-44 py-4 px-10 "
               >

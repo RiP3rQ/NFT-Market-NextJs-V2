@@ -20,6 +20,8 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 
 const AuctionListing = ({ params }: { params: { listingId: string } }) => {
+  const [isSomethingOnPageLoading, setIsSomethingOnPageLoading] =
+    useState(false);
   const address = useAddress();
   const router = useRouter();
   const [minimumNextBid, setMinimumNextBid] = useState<{
@@ -72,6 +74,9 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
 
     if (!listingId || !contract || !listing) return;
 
+    // Disable all buttons on page
+    setIsSomethingOnPageLoading(true);
+
     // Toast notification to say buying NFT
     const notification = toast.loading("Rozpocząto proces kupna...");
 
@@ -87,6 +92,9 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
         toast.error("UPS! Coś poszło nie tak.", { id: notification });
         console.log(error);
         return error;
+      })
+      .finally(() => {
+        setIsSomethingOnPageLoading(false);
       });
   };
 
@@ -103,6 +111,10 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
 
     if (bidAmount < Number(minimumNextBid?.displayValue))
       return toast.error("Kwota licytacji musi być większa od minimalnej!");
+
+    // Disable all buttons on page
+    setIsSomethingOnPageLoading(true);
+
     // Toast notification to making offer
     const notification = toast.loading("Składanie oferty...");
 
@@ -122,6 +134,9 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
         });
         console.log(error);
         return error;
+      })
+      .finally(() => {
+        setIsSomethingOnPageLoading(false);
       });
   };
 
@@ -209,6 +224,7 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
             </p>
 
             <Button
+              disabled={isSomethingOnPageLoading}
               onClick={buyNft}
               className="col-start-2 mt-2 bg-blue-600 font-bold
                text-white rounded-full w-44 py-4 px-10"
@@ -247,6 +263,7 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
               value={bidAmount}
             />
             <Button
+              disabled={isSomethingOnPageLoading}
               onClick={() => makeBid()}
               className="bg-green-600 font-bold text-white rounded-full w-44 py-4 px-10 "
             >
