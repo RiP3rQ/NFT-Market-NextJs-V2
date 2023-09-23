@@ -9,10 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "./ui/separator";
 import { useRouter } from "next/navigation";
 import { useAddress } from "@thirdweb-dev/react";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 const Navbar = () => {
   const router = useRouter();
   const address = useAddress();
+  const pathname = usePathname().split("/")[1];
 
   return (
     <div>
@@ -27,7 +30,10 @@ const Navbar = () => {
           <HoverCardTrigger>
             <Button
               variant="link"
-              className="text-xl font-bold hover:underline hover:decoration-pink-600/50"
+              className={cn(
+                "text-xl font-bold hover:underline hover:decoration-pink-600/50",
+                pathname === "dodaj" && "underline decoration-pink-600/50"
+              )}
               onClick={() => {
                 router.push("/dodaj");
               }}
@@ -52,7 +58,10 @@ const Navbar = () => {
           <HoverCardTrigger>
             <Button
               variant="link"
-              className="text-xl font-bold hover:underline hover:decoration-pink-600/50"
+              className={cn(
+                "text-xl font-bold hover:underline hover:decoration-pink-600/50",
+                pathname === "" && "underline decoration-pink-600/50"
+              )}
               onClick={() => {
                 router.push("/");
               }}
@@ -71,7 +80,10 @@ const Navbar = () => {
           <HoverCardTrigger>
             <Button
               variant="link"
-              className="text-xl font-bold hover:underline hover:decoration-pink-600/50"
+              className={cn(
+                "text-xl font-bold hover:underline hover:decoration-pink-600/50",
+                pathname === "kolekcje" && "underline decoration-pink-600/50"
+              )}
               onClick={() => {
                 router.push("/kolekcje");
               }}
@@ -90,7 +102,10 @@ const Navbar = () => {
           <HoverCardTrigger>
             <Button
               variant="link"
-              className="text-xl font-bold hover:underline hover:decoration-pink-600/50"
+              className={cn(
+                "text-xl font-bold hover:underline hover:decoration-pink-600/50",
+                pathname === "ekwipunek" && "underline decoration-pink-600/50"
+              )}
               onClick={() => {
                 router.push("/ekwipunek");
               }}
