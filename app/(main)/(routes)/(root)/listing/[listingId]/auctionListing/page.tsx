@@ -15,6 +15,9 @@ import { Mumbai } from "@thirdweb-dev/chains";
 import toast from "react-hot-toast";
 import Countdown from "react-countdown";
 import { InfinitySpin } from "react-loader-spinner";
+import AttributeBlock from "@/components/root/attribute-block";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 
 const AuctionListing = ({ params }: { params: { listingId: string } }) => {
   const address = useAddress();
@@ -23,7 +26,7 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
     displayValue: string;
     symbol: string;
   }>();
-  const [bidAmount, setBidAmount] = useState("");
+  const [bidAmount, setBidAmount] = useState<number>();
   const { listingId } = params;
 
   // Marketplace contract
@@ -85,7 +88,7 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
         return error;
       })
       .finally(() => {
-        setBidAmount("");
+        setBidAmount(0);
       });
 
     console.log(txResult);
@@ -114,7 +117,7 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
         return error;
       })
       .finally(() => {
-        setBidAmount("");
+        setBidAmount(0);
       });
 
     console.log(txResult);
@@ -142,26 +145,58 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
 
   // Actual page
   return (
-    <div>
-      <main className="max-w-6xl mx-auto p-2 flex flex-col lg:flex-row space-y-10 space-x-5 pr-10">
-        <div className="p-10 border mx-auto lg:mx-0 max-w-md lg:max-w-xl">
-          <MediaRenderer src={listing.asset.image} />
-        </div>
-
-        <section className="flex-1 space-y-5 pb-20 lg:pb-0">
-          <div>
-            <h1 className="text-xl font-bold">{listing.asset.name}</h1>
-            <p className="text-gray-600 mb-2">{listing.asset.description}</p>
-            <p className="flex items-center text-xs sm:text-base">
-              <UserCircleIcon className="h-5" />
-              <span className="font-bold pr-2">Sprzedawca: </span>
-              {listing.creatorAddress.slice(0, 5) +
-                "..." +
-                listing.creatorAddress.slice(-5)}
-            </p>
+    <div className="flex flex-col h-full w-full pt-4">
+      <main className="w-full lg:max-w-7xl p-2 flex flex-col justify-center items-center space-x-5 pr-10 lg:flex-row lg:mx-auto lg:items-start lg:justify-start">
+        <aside className="w-full lg:w-5/12 lg:mx-0 pb-20 lg:pb-0">
+          {/* Image */}
+          <div className="border mx-auto flex items-center justify-center">
+            <MediaRenderer src={listing.asset.image} />
           </div>
 
-          <div className="grid grid-cols-2 items-center py-2">
+          {/* Description */}
+          <div className="space-y-4">
+            <div>
+              <p className="font-bold text-lg">Opis:</p>
+              <p className="text-gray-600 mb-2">{listing.asset.description}</p>
+            </div>
+            {/* Attributes if exist */}
+            {listing.asset.attributes && (
+              <>
+                <Separator />
+                <div>
+                  <p className="font-bold text-lg">Cechy:</p>
+                  <div className="grid grid-cols-2 gap-y-2 gap-x-2">
+                    {
+                      // @ts-ignore
+                      listing.asset.attributes?.map((attribute) => (
+                        <AttributeBlock
+                          key={attribute.trait_type}
+                          trait_type={attribute.trait_type}
+                          value={attribute.value}
+                        />
+                      ))
+                    }
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </aside>
+
+        <section className="w-full space-y-5 pb-20 lg:w-7/12 lg:mx-0 lg:pb-0">
+          <h1 className="text-5xl font-bold">{listing.asset.name}</h1>
+          <Separator />
+          <p className="flex items-center justify-center text-xs sm:text-base">
+            <UserCircleIcon className="h-5" />
+            <span className="font-bold pr-2">Sprzedawca: </span>
+            {listing.creatorAddress.slice(0, 5) +
+              "..." +
+              listing.creatorAddress.slice(-5)}
+          </p>
+
+          <Separator />
+
+          <div className="grid grid-cols-2 gap-y-2">
             <p className="font-bold">Typ sprzedaży:</p>
             <p>Licytacja</p>
 
@@ -171,50 +206,50 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
               {listing.buyoutCurrencyValue.symbol}
             </p>
 
-            <button
+            <Button
               onClick={buyNft}
               className="col-start-2 mt-2 bg-blue-600 font-bold
                text-white rounded-full w-44 py-4 px-10"
             >
               Kup teraz
-            </button>
+            </Button>
           </div>
 
-          <div className="grid grid-cols-2 space-y-2 items-center justify-end">
-            <hr className="col-span-2" />
+          <Separator />
 
-            <>
-              <p>Current Minimum Bid:</p>
-              <p className="font-bold">
-                {minimumNextBid?.displayValue} {minimumNextBid?.symbol}
-              </p>
+          <div className="grid grid-cols-2 gap-y-2">
+            <p className="font-bold">Obecnie najmniejsze podbicie:</p>
+            <p className="">
+              {minimumNextBid?.displayValue} {minimumNextBid?.symbol}
+            </p>
 
-              <p>Time Remaining:</p>
+            <p className="font-bold">Pozostały czas:</p>
+            <p className="text-xl font-bold">
               <Countdown
                 date={Number(listing.endTimeInSeconds.toString()) * 1000}
               />
-            </>
+            </p>
+          </div>
 
-            <hr className="col-span-2" />
-
+          <div className="grid grid-cols-2 space-y-2 items-center justify-end">
             <p className="col-span-2 font-bold">
               Licytuj najlepszą okację{" "}
-              <span className="font-bold">[MATIC]</span>
+              <span className="font-bold">[RIPERS]</span>
             </p>
 
             <input
-              type="text"
+              type="number"
               placeholder={`Minimum: ${minimumNextBid?.displayValue} ${minimumNextBid?.symbol}`}
               className="border p-2 rounded-lg mr-5"
-              onChange={(e) => setBidAmount(e.target.value)}
+              onChange={(e) => setBidAmount(e.target.valueAsNumber)}
               value={bidAmount}
             />
-            <button
-              onClick={makeBid}
-              className="bg-red-600 font-bold text-white rounded-full w-44 py-4 px-10"
+            <Button
+              onClick={() => makeBid()}
+              className="bg-green-600 font-bold text-white rounded-full w-44 py-4 px-10 "
             >
               Licytuj
-            </button>
+            </Button>
           </div>
         </section>
       </main>

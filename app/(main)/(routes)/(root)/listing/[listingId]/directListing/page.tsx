@@ -180,7 +180,7 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
   // Actual page
   return (
     <div className="flex flex-col h-full w-full pt-4">
-      <main className="max-w-7xl p-2 flex flex-col justify-center items-center space-x-5 pr-10 lg:flex-row lg:mx-auto lg:items-start lg:justify-start">
+      <main className="w-full lg:max-w-7xl p-2 flex flex-col justify-center items-center space-x-5 pr-10 lg:flex-row lg:mx-auto lg:items-start lg:justify-start">
         <aside className="w-full lg:w-5/12 lg:mx-0 pb-20 lg:pb-0">
           {/* Image */}
           <div className="border mx-auto flex items-center justify-center">
@@ -240,13 +240,13 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
               {listing.currencyValuePerToken.symbol}
             </p>
 
-            <button
+            <Button
               onClick={buyNft}
               className="col-start-2 mt-2 bg-blue-600 font-bold
                text-white rounded-full w-44 py-4 px-10"
             >
               Kup teraz
-            </button>
+            </Button>
           </div>
           {/* If direct, show offers here ... */}
           {offers && (
