@@ -82,7 +82,7 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
       return;
     }
 
-    if (!listingId || !contract || !listing) return;
+    if (!listingId || !contract || !listing || !address) return;
 
     // Disable all buttons on page
     setIsSomethingOnPageLoading(true);
@@ -155,7 +155,7 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
     // Toast notification to making offer
     const notification = toast.loading("Tworzę ofertę...");
 
-    if (!contract || !listing || !bidAmount) return;
+    if (!contract || !listing || !bidAmount || !address) return;
 
     if (bidAmount >= parseFloat(listing.currencyValuePerToken.displayValue)) {
       // Toast notification to say buying NFT

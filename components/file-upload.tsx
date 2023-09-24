@@ -107,6 +107,9 @@ export const FileUpload = ({
       <p className="text-center">
         <Button type="button">Kliknij aby wybrać</Button>
       </p>
+      <p className="text-xs text-gray-500 text-center lg:px-4">
+        Akceptowane typy plików to: {fileTypes.join(", ")}
+      </p>
     </div>
   );
 };

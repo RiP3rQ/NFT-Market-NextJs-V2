@@ -40,6 +40,19 @@ const EkwipunekPage = () => {
   const ownedNftsFromDrop = useOwnedNFTs(dropContract, address);
   const ownedNftsFromDropPunks = useOwnedNFTs(dropContractPunks, address);
 
+  // If not logged in
+  if (!address) {
+    return (
+      <div className="flex justify-center items-center h-full w-full">
+        <main className="max-w-7xl mx-auto p-10 border ">
+          <h1 className="text-8xl font-bold text-center animate-pulse text-red-500">
+            ZALOGUJ SIĘ ABY ZOBACZYĆ EKWIPUNEK
+          </h1>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full w-full">
       <main className="p-10 pt-2">

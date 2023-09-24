@@ -72,7 +72,7 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
       return;
     }
 
-    if (!listingId || !contract || !listing) return;
+    if (!listingId || !contract || !listing || !address) return;
 
     // Disable all buttons on page
     setIsSomethingOnPageLoading(true);
@@ -105,7 +105,7 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
       return;
     }
 
-    if (!listingId || !contract || !listing) return;
+    if (!listingId || !contract || !listing || !address) return;
 
     if (!bidAmount) return toast.error("Wpisz kwotę licytacji!");
 
