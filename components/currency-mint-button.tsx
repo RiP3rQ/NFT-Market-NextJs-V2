@@ -44,9 +44,9 @@ export const CurrencyMintButton = () => {
       await token?.erc20
         .claim(100)
         .then(() => {
-          toast.success("Uzyskano 100x[RIPERS]!");
+          toast.success("Uzyskano 100x[RIPERS]!", { id: notification });
           toast.loading("Odśwież stronę, żeby zobaczyć efekt...", {
-            id: notification,
+            duration: 4000,
           });
         })
         .catch((error) => {
