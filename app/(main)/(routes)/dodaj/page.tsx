@@ -2,8 +2,8 @@
 
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { set, useForm } from "react-hook-form";
-import React, { FormEvent, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import {
   Form,
@@ -45,9 +45,6 @@ const DodajNFT = () => {
 
   const { data, onClose, onOpen } = useAddPropertyToNftModal();
 
-  console.log(file);
-  console.log(attributes);
-
   useEffect(() => {
     if (Object.keys(data).length > 0) {
       // @ts-ignore
@@ -77,10 +74,16 @@ const DodajNFT = () => {
 
   const onReorder = (updateData: { trait_type: string; value: string }[]) => {
     setAttributes(updateData);
-    toast.success("Pozycje atrybutów zaktualizowane!");
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log("Submitting", values);
+    const { name, description } = values;
+    if (!file || !name || !description) {
+      toast.error("Wypełnij wszystkie pola!");
+      return;
+    }
+
     if (!contract || !address) {
       toast("Musisz być zalogowany, aby dodać NFT!", {
         duration: 4000,
@@ -153,11 +156,10 @@ const DodajNFT = () => {
       </div>
     );
   }
-
   // Actual Page
   return (
-    <div className="flex justify-center h-fit mt-4">
-      <main className="max-w-7xl mx-auto p-10 border ">
+    <div className="flex justify-center h-full relative pt-4">
+      <main className="max-w-7xl mx-auto p-10 border h-fit">
         <h1 className="text-2xl font-bold text-center">Stwórz własne NFT</h1>
         <h2 className="text-lg font-semibold pt-5">Szczegóły tworzonego NFT</h2>
         <p className="pb-5 text-sm">
@@ -169,7 +171,10 @@ const DodajNFT = () => {
         <hr className="text-white mb-2" />
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            className="space-y-4 mb-4"
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
             <FormField
               control={form.control}
               name="name"
@@ -198,78 +203,80 @@ const DodajNFT = () => {
               )}
             />
 
-            <div className="grid grid-cols-12">
-              {/* Left Side */}
-              <div className="col-span-3">
-                <div className="w-full items-center gap-1.5 mb-2 space-y-2">
-                  <Label htmlFor="picture">Plik</Label>
-
-                  {preview ? (
-                    <div className="w-full h-64 rounded-lg bg-slate-300 flex items-center justify-center relative">
-                      <MediaRenderer
-                        src={preview}
-                        poster="https://res.cloudinary.com/dr3jjyqgi/image/upload/v1695510077/kpsszibzfuthyaqz6v9j.avif"
-                        requireInteraction={true}
-                      />
-                      <div
-                        className="absolute -top-2 -right-2 cursor-pointer"
-                        onClick={() => {
-                          setPreview(undefined);
-                          setFile(undefined);
-                        }}
-                      >
-                        <X className="w-6 h-6 text-white bg-red-600 rounded-full" />
-                      </div>
-                    </div>
-                  ) : (
-                    <FileUpload
-                      endpoint="NFT"
-                      onChange={(url) => {
-                        if (url) {
-                          setPreview(url);
-                        }
-                      }}
-                      toastId="24"
-                    />
-                  )}
-                </div>
-                <div className="w-full flex items-center justify-center">
-                  <Button
-                    variant="link"
-                    className="text-xl font-bold hover:underline hover:decoration-pink-600/50 border-2 border-pink-600/50"
-                    disabled={isLoading}
-                  >
-                    Wystaw
-                  </Button>
-                </div>
-              </div>
-              {/* Middle Row */}
-              <div className="col-span-1 flex justify-center">
-                <Separator orientation="vertical" />
-              </div>
-              {/* Right Side */}
-              <div className="col-span-8">
-                <div className="flex justify-between items-center">
-                  <Label className="text-lg font-bold">
-                    Dodaj unikalne atrybuty:
-                  </Label>
-                  <Button
-                    type="button"
-                    onClick={() => onOpen()}
-                    className="h-8"
-                  >
-                    Dodaj atrybut
-                  </Button>
-                </div>
-                <Separator className="mt-1 mb-2" />
-
-                {attributes.length > 0 ? (
-                  <ReorderCard attributes={attributes} onReorder={onReorder} />
-                ) : null}
-              </div>
+            <div className="w-full flex items-center justify-center fixed bottom-4 right-0 z-50">
+              <Button
+                variant="link"
+                type="submit"
+                className="text-xl font-bold hover:underline bg-slate-500 hover:decoration-pink-600/50 border-2 border-pink-600/50"
+                disabled={isLoading}
+              >
+                Wystaw
+              </Button>
             </div>
           </form>
         </Form>
+        <div className="grid grid-cols-12">
+          {/* Left Side */}
+          <div className="col-span-12 lg:col-span-3  mb-8 lg:mb-0">
+            <div className="w-full items-center gap-1.5 mb-2 space-y-2">
+              <Label htmlFor="picture">Plik</Label>
+
+              {preview ? (
+                <div className="w-full rounded-lg bg-slate-300 flex items-center justify-center relative">
+                  <MediaRenderer
+                    src={preview}
+                    requireInteraction={true}
+                    className="w-full rounded-lg object-contain"
+                  />
+                  <div
+                    className="absolute -top-2 -right-2 cursor-pointer"
+                    onClick={() => {
+                      setPreview(undefined);
+                      setFile(undefined);
+                    }}
+                  >
+                    <X className="w-6 h-6 text-white bg-red-600 rounded-full" />
+                  </div>
+                </div>
+              ) : (
+                <div className="w-full h-64 rounded-lg bg-slate-300 flex items-center justify-center">
+                  <FileUpload
+                    endpoint="NFT"
+                    onChange={(url) => {
+                      if (url) {
+                        setPreview(url);
+                      }
+                    }}
+                    toastId="24"
+                    setNftFile={(file) => {
+                      setFile(file);
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+          {/* Middle Row */}
+          <div className="hidden lg:col-span-1 lg:flex justify-center">
+            <Separator orientation="vertical" />
+          </div>
+          {/* Right Side */}
+          <div className="col-span-12 order-first mb-12 lg:mb-6 lg:order-none lg:col-span-8">
+            <div className="flex justify-between items-center">
+              <Label className="text-lg font-bold">
+                Dodaj unikalne atrybuty:
+              </Label>
+              <Button type="button" onClick={() => onOpen()} className="h-8">
+                Dodaj atrybut
+              </Button>
+            </div>
+            <Separator className="mt-1 mb-2" />
+
+            {attributes.length > 0 ? (
+              <ReorderCard attributes={attributes} onReorder={onReorder} />
+            ) : null}
+          </div>
+        </div>
       </main>
     </div>
   );

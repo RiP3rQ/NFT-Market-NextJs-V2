@@ -24,8 +24,6 @@ const EkwipunekPage = () => {
   //Get active direct listings and auctions from marketplace
   const { directListings, auctionListings } = useActiveListings();
 
-  console.log(directListings, auctionListings);
-
   const { contract: collectionContract } = useContract(
     process.env.NEXT_PUBLIC_COLLECTION_CONTRACT,
     "nft-collection"
