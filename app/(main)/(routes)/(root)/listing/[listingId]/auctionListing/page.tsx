@@ -207,7 +207,7 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
             <UserCircleIcon className="h-5" />
             <span className="font-bold pr-2">Sprzedawca: </span>
             {listing.creatorAddress.slice(0, 5) +
-              "..." +
+              `...` +
               listing.creatorAddress.slice(-5)}
           </p>
 
@@ -217,7 +217,7 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
             <p className="font-bold">Typ sprzedaży:</p>
             <p>Licytacja</p>
 
-            <p className="font-bold">Cena "Kup teraz": </p>
+            <p className="font-bold">Cena [Kup teraz]: </p>
             <p className="text-4xl font-bold">
               {listing.buyoutCurrencyValue.displayValue}{" "}
               {listing.buyoutCurrencyValue.symbol}

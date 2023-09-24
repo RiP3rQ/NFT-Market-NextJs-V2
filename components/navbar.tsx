@@ -93,7 +93,8 @@ const Navbar = () => {
           </HoverCardTrigger>
           <HoverCardContent className="p-1 text-center">
             <p className="text-gray-400 text-sm">
-              Lista kolekcji NFT możliwych do "wykopania".
+              Lista dostępnych kolekcji NFT z których można zdobyć unikalne
+              tokeny.
             </p>
           </HoverCardContent>
         </HoverCard>

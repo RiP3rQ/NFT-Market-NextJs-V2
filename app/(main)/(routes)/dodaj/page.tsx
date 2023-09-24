@@ -2,7 +2,7 @@
 
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import React, { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import {
@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import {
+  MediaRenderer,
   useAddress,
   useContract,
   useNetworkMismatch,
@@ -27,6 +28,8 @@ import { Mumbai } from "@thirdweb-dev/chains";
 import { Separator } from "@/components/ui/separator";
 import { useAddPropertyToNftModal } from "@/hooks/use-add-property-to-nft-modal";
 import ReorderCard from "./_components/reorder-card";
+import { FileUpload } from "@/components/file-upload";
+import { X } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(3, "Nazwa musi mieć minimum 3 znaki"),
@@ -38,6 +41,7 @@ const DodajNFT = () => {
   const router = useRouter();
   const [file, setFile] = useState<File>();
   const [attributes, setAttributes] = useState<Record<string, string>[]>([]);
+  const [preview, setPreview] = useState<string | undefined>(undefined);
 
   const { data, onClose, onOpen } = useAddPropertyToNftModal();
 
@@ -137,6 +141,20 @@ const DodajNFT = () => {
     }
   };
 
+  // If not logged in
+  if (!address) {
+    return (
+      <div className="flex justify-center items-center h-full w-full">
+        <main className="max-w-7xl mx-auto p-10 border ">
+          <h1 className="text-8xl font-bold text-center animate-pulse text-red-500">
+            ZALOGUJ SIĘ ABY STWORZYĆ NFT
+          </h1>
+        </main>
+      </div>
+    );
+  }
+
+  // Actual Page
   return (
     <div className="flex justify-center h-fit mt-4">
       <main className="max-w-7xl mx-auto p-10 border ">
@@ -181,15 +199,39 @@ const DodajNFT = () => {
             />
 
             <div className="grid grid-cols-12">
+              {/* Left Side */}
               <div className="col-span-3">
                 <div className="w-full items-center gap-1.5 mb-2 space-y-2">
                   <Label htmlFor="picture">Plik</Label>
-                  <Input
-                    id="picture"
-                    type="file"
-                    className="cursor-pointer"
-                    onChange={(e) => setFile(e.target.files?.[0])}
-                  />
+
+                  {preview ? (
+                    <div className="w-full h-64 rounded-lg bg-slate-300 flex items-center justify-center relative">
+                      <MediaRenderer
+                        src={preview}
+                        poster="https://res.cloudinary.com/dr3jjyqgi/image/upload/v1695510077/kpsszibzfuthyaqz6v9j.avif"
+                        requireInteraction={true}
+                      />
+                      <div
+                        className="absolute -top-2 -right-2 cursor-pointer"
+                        onClick={() => {
+                          setPreview(undefined);
+                          setFile(undefined);
+                        }}
+                      >
+                        <X className="w-6 h-6 text-white bg-red-600 rounded-full" />
+                      </div>
+                    </div>
+                  ) : (
+                    <FileUpload
+                      endpoint="NFT"
+                      onChange={(url) => {
+                        if (url) {
+                          setPreview(url);
+                        }
+                      }}
+                      toastId="24"
+                    />
+                  )}
                 </div>
                 <div className="w-full flex items-center justify-center">
                   <Button
@@ -201,9 +243,11 @@ const DodajNFT = () => {
                   </Button>
                 </div>
               </div>
+              {/* Middle Row */}
               <div className="col-span-1 flex justify-center">
                 <Separator orientation="vertical" />
               </div>
+              {/* Right Side */}
               <div className="col-span-8">
                 <div className="flex justify-between items-center">
                   <Label className="text-lg font-bold">
