@@ -36,14 +36,11 @@ export const FileUpload = ({
     setFiles(acceptedFiles);
   }, []);
 
-  console.log(files);
-
   const sendFile = async (file: string | undefined) => {
     onChange(file);
     toast.dismiss(toastId);
     toast.success(`Wysłano!`);
     setFiles(files.slice(1, files.length));
-    console.log("Files after completion:", files);
   };
 
   const { startUpload, permittedFileInfo } = useUploadThing(endpoint, {

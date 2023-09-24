@@ -149,13 +149,13 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
       return;
     }
 
+    if (!contract || !listing || !bidAmount || !address) return;
+
     // Disable all buttons on page
     setIsSomethingOnPageLoading(true);
 
     // Toast notification to making offer
     const notification = toast.loading("Tworzę ofertę...");
-
-    if (!contract || !listing || !bidAmount || !address) return;
 
     if (bidAmount >= parseFloat(listing.currencyValuePerToken.displayValue)) {
       // Toast notification to say buying NFT
@@ -274,7 +274,7 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
             </p>
 
             <Button
-              disabled={isSomethingOnPageLoading}
+              disabled={isSomethingOnPageLoading || !address}
               onClick={buyNft}
               className="col-start-2 mt-2 bg-blue-600 font-bold
                text-white rounded-full w-44 py-4 px-10"
@@ -324,7 +324,7 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
 
                     {listing.creatorAddress === address && (
                       <Button
-                        disabled={isSomethingOnPageLoading}
+                        disabled={isSomethingOnPageLoading || !address}
                         onClick={() => acceptDirectOffer(offer.id)}
                         className="p-2 w-32 bg-green-500 rounded-lg 
                         font-bold text-sm cursor-pointer"
@@ -346,6 +346,7 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
             </p>
 
             <input
+              disabled={isSomethingOnPageLoading || !address}
               type="number"
               placeholder="Wpisz proponowaną kwotę"
               className="border p-2 rounded-lg mr-5"
@@ -354,7 +355,7 @@ const DirectListing = ({ params }: { params: { listingId: string } }) => {
             />
             <div className="flex items-center justify-center">
               <Button
-                disabled={isSomethingOnPageLoading}
+                disabled={isSomethingOnPageLoading || !address}
                 onClick={() => makeOffer()}
                 className="bg-green-600 font-bold text-white rounded-full w-44 py-4 px-10 "
               >

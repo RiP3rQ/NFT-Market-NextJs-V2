@@ -236,15 +236,18 @@ const DodajNFT = () => {
                     requireInteraction={true}
                     className="w-full rounded-lg object-contain"
                   />
-                  <div
-                    className="absolute -top-2 -right-2 cursor-pointer"
+                  <Button
+                    disabled={isLoading || isSomethingOnPageLoading}
+                    className="absolute -top-4 -right-4 cursor-pointer w-8 h-8
+                  bg-red-600 rounded-full flex items-center justify-center
+                  text-white text-lg hover:text-black"
                     onClick={() => {
                       setPreview(undefined);
                       setFile(undefined);
                     }}
                   >
-                    <X className="w-6 h-6 text-white bg-red-600 rounded-full" />
-                  </div>
+                    X
+                  </Button>
                 </div>
               ) : (
                 <div className="w-full h-64 rounded-lg bg-slate-300 flex items-center justify-center">

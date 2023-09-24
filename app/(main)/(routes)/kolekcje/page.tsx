@@ -17,7 +17,6 @@ const KolekcjePage = () => {
     const getAllCollections = async () => {
       const collections = await axios.get("/api/kolekcje");
       setCollections(collections.data);
-      console.log(collections);
       setLoading(false);
     };
 

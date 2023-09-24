@@ -140,8 +140,6 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
       });
   };
 
-  console.log(listing);
-
   // Loader
   if (isLoading)
     return (
@@ -224,7 +222,7 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
             </p>
 
             <Button
-              disabled={isSomethingOnPageLoading}
+              disabled={isSomethingOnPageLoading || !address}
               onClick={buyNft}
               className="col-start-2 mt-2 bg-blue-600 font-bold
                text-white rounded-full w-44 py-4 px-10"
@@ -256,6 +254,7 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
             </p>
 
             <input
+              disabled={isSomethingOnPageLoading || !address}
               type="number"
               placeholder={`Minimum: ${minimumNextBid?.displayValue} ${minimumNextBid?.symbol}`}
               className="border p-2 rounded-lg mr-5"
@@ -263,7 +262,7 @@ const AuctionListing = ({ params }: { params: { listingId: string } }) => {
               value={bidAmount}
             />
             <Button
-              disabled={isSomethingOnPageLoading}
+              disabled={isSomethingOnPageLoading || !address}
               onClick={() => makeBid()}
               className="bg-green-600 font-bold text-white rounded-full w-44 py-4 px-10 "
             >

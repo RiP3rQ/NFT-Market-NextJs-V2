@@ -45,9 +45,7 @@ export const CurrencyMintButton = () => {
         .claim(100)
         .then(() => {
           toast.success("Uzyskano 100x[RIPERS]!", { id: notification });
-          toast.loading("Odśwież stronę, żeby zobaczyć efekt...", {
-            duration: 4000,
-          });
+          window.location.reload();
         })
         .catch((error) => {
           toast.error("Token nie mógł zostać wygenerowany.", {

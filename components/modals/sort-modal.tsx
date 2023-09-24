@@ -58,7 +58,6 @@ const SortModal = () => {
       sortCategory: sortCategory,
       sortDirection: sortDirection,
     });
-    console.log(values);
   };
 
   useEffect(() => {
