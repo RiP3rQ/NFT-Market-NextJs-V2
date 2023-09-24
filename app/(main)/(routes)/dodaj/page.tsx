@@ -37,6 +37,8 @@ const formSchema = z.object({
 });
 
 const DodajNFT = () => {
+  const [isSomethingOnPageLoading, setIsSomethingOnPageLoading] =
+    useState(false);
   const address = useAddress();
   const router = useRouter();
   const [file, setFile] = useState<File>();
@@ -77,7 +79,6 @@ const DodajNFT = () => {
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log("Submitting", values);
     const { name, description } = values;
     if (!file || !name || !description) {
       toast.error("Wypełnij wszystkie pola!");
@@ -113,6 +114,9 @@ const DodajNFT = () => {
       return;
     }
 
+    // Disable all buttons on page
+    setIsSomethingOnPageLoading(true);
+
     const notification = toast.loading("Tworzę nowe NFT!");
 
     try {
@@ -138,6 +142,9 @@ const DodajNFT = () => {
           toast.error("Coś poszło nie tak!", {
             id: notification,
           });
+        })
+        .finally(() => {
+          setIsSomethingOnPageLoading(false);
         });
     } catch (error) {
       console.log(error);
@@ -207,8 +214,9 @@ const DodajNFT = () => {
               <Button
                 variant="link"
                 type="submit"
-                className="text-xl font-bold hover:underline bg-slate-500 hover:decoration-pink-600/50 border-2 border-pink-600/50"
-                disabled={isLoading}
+                className="text-xl font-bold hover:underline bg-white text-black
+                hover:decoration-pink-800 border-4 border-pink-800"
+                disabled={isLoading || isSomethingOnPageLoading}
               >
                 Wystaw
               </Button>
@@ -251,6 +259,9 @@ const DodajNFT = () => {
                     setNftFile={(file) => {
                       setFile(file);
                     }}
+                    setLoading={(loading) => {
+                      setIsSomethingOnPageLoading(loading);
+                    }}
                   />
                 </div>
               )}
@@ -266,7 +277,12 @@ const DodajNFT = () => {
               <Label className="text-lg font-bold">
                 Dodaj unikalne atrybuty:
               </Label>
-              <Button type="button" onClick={() => onOpen()} className="h-8">
+              <Button
+                type="button"
+                onClick={() => onOpen()}
+                className="h-8"
+                disabled={isLoading || isSomethingOnPageLoading}
+              >
                 Dodaj atrybut
               </Button>
             </div>

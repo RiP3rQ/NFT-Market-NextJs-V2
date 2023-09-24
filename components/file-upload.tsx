@@ -18,6 +18,8 @@ interface FileUploadProps {
   endpoint: keyof typeof ourFileRouter;
   toastId?: string;
   setNftFile: (file: File) => void;
+  setLoading?: (loading: boolean) => void;
+  loading?: boolean;
 }
 
 export const FileUpload = ({
@@ -25,8 +27,10 @@ export const FileUpload = ({
   endpoint,
   toastId,
   setNftFile,
+  setLoading,
 }: FileUploadProps) => {
   const [files, setFiles] = useState<File[]>([]);
+  const [fileLoading, setFileLoading] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
     setFiles(acceptedFiles);
@@ -45,6 +49,8 @@ export const FileUpload = ({
   const { startUpload, permittedFileInfo } = useUploadThing(endpoint, {
     onClientUploadComplete: (res) => {
       sendFile(res?.[0].url);
+      if (setLoading) setLoading(false);
+      setFileLoading(false);
     },
     onUploadError: (error: Error) => {
       toast.error(`${error?.message}`);
@@ -79,18 +85,29 @@ export const FileUpload = ({
           <p className="text-blue-600 w-3/4 h-fit truncate text-center">
             {files[0].name}
           </p>
-          <Button type="button" onClick={() => startUpload(files)}>
+          <Button
+            disabled={fileLoading}
+            type="button"
+            onClick={() => {
+              startUpload(files);
+              setFileLoading(true);
+              if (setLoading) setLoading(true);
+            }}
+          >
             Wyślij plik
           </Button>
         </div>
-        <div
-          className="absolute top-4 right-4 cursor-pointer"
+        <Button
+          className="absolute top-4 right-4 cursor-pointer w-8 h-8
+          bg-red-600 rounded-full flex items-center justify-center
+          text-white text-lg hover:text-black"
           onClick={() => {
             setFiles([]);
           }}
+          disabled={fileLoading}
         >
-          <X className="w-8 h-8 text-white bg-red-600 rounded-full" />
-        </div>
+          X
+        </Button>
       </div>
     );
   }
@@ -103,8 +120,8 @@ export const FileUpload = ({
       <input {...getInputProps()} />
 
       <p className="text-center text-blue-600">Upuść plik tutaj</p>
-      <p className="text-center text-blue-600">lub</p>
-      <p className="text-center">
+      <p className="text-center text-blue-600 mb-2">lub</p>
+      <p className="text-center mb-2">
         <Button type="button">Kliknij aby wybrać</Button>
       </p>
       <p className="text-xs text-gray-500 text-center lg:px-4">
