@@ -1,4 +1,3 @@
-import { Separator } from "@radix-ui/react-dropdown-menu";
 import React from "react";
 
 type Props = {

@@ -37,6 +37,7 @@ const Navbar = () => {
               onClick={() => {
                 router.push("/dodaj");
               }}
+              data-test="create-nft-button"
             >
               {address ? (
                 "Stwórz NFT"
@@ -65,6 +66,7 @@ const Navbar = () => {
               onClick={() => {
                 router.push("/");
               }}
+              data-test="marketplace-button"
             >
               Rynek NFT
             </Button>
@@ -87,6 +89,7 @@ const Navbar = () => {
               onClick={() => {
                 router.push("/kolekcje");
               }}
+              data-test="collections-button"
             >
               Kolekcje
             </Button>
@@ -110,6 +113,7 @@ const Navbar = () => {
               onClick={() => {
                 router.push("/ekwipunek");
               }}
+              data-test="inventory-button"
             >
               {address ? (
                 "Ekwipunek"

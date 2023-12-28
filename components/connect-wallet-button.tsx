@@ -8,7 +8,7 @@ const ConnectWalletButton = () => {
   const address = useAddress();
 
   return (
-    <div>
+    <div data-test="connect-wallet-button">
       {address ? (
         <ConnectWallet />
       ) : (

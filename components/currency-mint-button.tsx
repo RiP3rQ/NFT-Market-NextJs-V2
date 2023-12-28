@@ -24,7 +24,7 @@ export const CurrencyMintButton = () => {
   const switchChain = useSwitchChain();
 
   // Token contract
-  const { contract: token } = useContract(
+  const { contract: token, isLoading } = useContract(
     process.env.NEXT_PUBLIC_PAGE_CURRENCY_CONTRACT!,
     "token-drop"
   );
@@ -61,8 +61,18 @@ export const CurrencyMintButton = () => {
 
   if (!address) return null;
 
+  if (isLoading)
+    return (
+      <div className="flex flex-col items-center justify-center h-full w-40 border border-slate-400 bg-slate-700 rounded-lg p-[10px]">
+        Ładowanie ...
+      </div>
+    );
+
   return (
-    <div className="flex flex-col items-center justify-center h-full w-40 border border-slate-400 bg-slate-700 rounded-lg p-[10px]">
+    <div
+      className="flex flex-col items-center justify-center h-full w-40 border border-slate-400 bg-slate-700 rounded-lg p-[10px]"
+      data-test="currency-add-button"
+    >
       {/* Wallet balance */}
       <p className="text-xs text-white">
         Saldo: {currencyBalance?.data?.displayValue} [RIPERS]

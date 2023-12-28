@@ -1,4 +1,3 @@
-import { BigNumberish } from "ethers";
 import { create } from "zustand";
 
 interface ModalData {

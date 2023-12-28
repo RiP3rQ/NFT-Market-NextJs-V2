@@ -11,7 +11,6 @@ import { generateClientDropzoneAccept } from "uploadthing/client";
 
 import { useUploadThing } from "@/lib/uploadthing";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
 
 interface FileUploadProps {
   onChange: (url?: string) => void;

@@ -18,10 +18,18 @@ const Header = () => {
         cursor-pointer"
           onClick={() => router.push("/")}
         >
-          <h1 className="text-3xl font-extrabold underline decoration-pink-600/50 tracking-widest">
+          <h1
+            className="text-3xl font-extrabold underline decoration-pink-600/50 tracking-widest"
+            data-test="header_title"
+          >
             Rynek NFT
           </h1>
-          <h2 className="font-extralight text-sm text-gray-400">© RIP3RQ</h2>
+          <h2
+            className="font-extralight text-sm text-gray-400"
+            data-test="header_subtitle"
+          >
+            © RIP3RQ
+          </h2>
         </div>
         <div className="flex items-center justify-center space-x-3">
           <ModeToggle />
